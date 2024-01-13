@@ -2,4 +2,4 @@ flet
 sqlalchemy
 pyodbc
 pandas
-
+python-dotenv
