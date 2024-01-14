@@ -2,25 +2,25 @@ import math
 from flet import *
 import flet as ft
 
-
-# the content of the icon tab
+# the vista de trabajadores
 class TabContentVistaTrabajadores(ft.UserControl):
 
     def __init__(self):
         super().__init__()
-        self.icon_color = "red900"
-        self.icon_name = ""
-        self.icon_size = 65
-        self.icon_tooltip = None
-        self.icon_opacity = None
-        self.icon_rotate = None
-        self.icon_scale = None
-        self.icon_offset = None
 
-        self.icon_obj = ft.Ref[ft.Icon]()
+        #text field nombre
+        self.field_name = ft.TextField(
+            label="Nombre",
+            hint_text="Ingrese su nombre",
+            value="",
+            on_change=self.update_icon,
+            # on_blur=self.update_icon,
+            keyboard_type=ft.KeyboardType.TEXT,
+            expand=1
+        )
 
-        # text field for tooltip property of the Icon object
-        self.field_tooltip = ft.TextField(
+        # text field apellido
+        self.field_apellido = ft.TextField(
             label="Apellido",
             hint_text="Ingrese su apellido",
             value="",
@@ -30,83 +30,69 @@ class TabContentVistaTrabajadores(ft.UserControl):
             expand=1
         )
 
-        # text field for color property of the Icon object
-        self.field_color = ft.TextField(
-            label="color",
-            value="red900",
-            on_submit=self.update_icon,
-            # on_blur=self.update_icon,
-            keyboard_type=ft.KeyboardType.TEXT,
-            hint_text="colors.RED_50 or red50",
-            expand=1
-        )
-
-        # text field for the size property of the Icon object
-        self.field_size = ft.TextField(
-            label="tamaño",
+        # text field Fecha Nacimiento
+        self.field_fechaNac = ft.TextField(
+            label="Fecha Nacimiento",
+            hint_text="DD-MM-YYYY",
             value="",
-            helper_text="Union[int, float]",
-            on_submit=self.update_icon,
-            # on_blur=self.update_icon,
-            keyboard_type=ft.KeyboardType.NUMBER,
-            # expand=1
-            width=170,
-        )
-
-        # text field for the name property of the Icon object
-        self.field_name = ft.TextField(
-            label="Nombre",
-            hint_text="Ingrese su nombre",
-            value="",
-            on_submit=self.update_icon,
-            # on_blur=self.update_icon,
-            keyboard_type=ft.KeyboardType.TEXT,
-            expand=2
-        )
-
-        # text field for the opacity property of the Icon object
-        self.field_opacity = ft.TextField(
-            label="opacity",
-            value="",
-            helper_text="Union[int, float]",
+            #helper_text="Optional[str]",
             on_change=self.update_icon,
-            # on_blur=self.update_icon,
+            keyboard_type=ft.KeyboardType.TEXT,
+            expand=1
+        )
+
+        # text field Numero de Telefono
+        self.field_numeroCel = ft.TextField(
+            label="Numero de Celular",
+            hint_text="Ingrese su numero de celular",
+            value="",
+            #helper_text="Optional[str]",
+            on_change=self.update_icon,
             keyboard_type=ft.KeyboardType.NUMBER,
-            width=170,
-            # expand=1
+            expand=1
         )
 
-        # text field for the rotate property of the Icon object
-        self.field_rotate = ft.TextField(
-            label="rotate | angle in degrees",
+        # text field Numero de Trabajador
+        self.field_traba = ft.TextField(
+            label="Trabajador",
+            hint_text="Ingrese Rol del Trabajador",
             value="",
-            helper_text="Union[int, float, Rotate]",
-            on_submit=self.update_icon,
-            # on_blur=self.update_icon,
+            #helper_text="Optional[str]",
+            on_change=self.update_icon,
             keyboard_type=ft.KeyboardType.TEXT,
             expand=1
         )
 
-        # text field for the offset property of the Icon object
-        self.field_offset = ft.TextField(
-            label="offset",
+        # text field Numero de DNI
+        self.field_numeroDNI = ft.TextField(
+            label="DNI",
+            hint_text="Ingrese su DNI",
             value="",
-            helper_text="Optional[Offset, tuple]",
-            on_submit=self.update_icon,
-            # on_blur=self.update_icon,
+            #helper_text="Optional[str]",
+            on_change=self.update_icon,
+            keyboard_type=ft.KeyboardType.NUMBER,
+            expand=1
+        )
+
+        # text field Direccion
+        self.field_direccion = ft.TextField(
+            label="Direccion",
+            hint_text="Ingrese su direccion",
+            value="",
+            #helper_text="Optional[str]",
+            on_change=self.update_icon,
             keyboard_type=ft.KeyboardType.TEXT,
             expand=1
         )
 
-        # text field for the scale property of the Icon object
-        self.field_scale = ft.TextField(
-            label="scale",
+        # text field tipo Licencia Conducir
+        self.field_licencia = ft.TextField(
+            label="Categoria Licencia Conducir",
+            hint_text="Ingrese su categoria de licencia de conducir",
             value="",
-            helper_text="Union[int, float, Scale]",
-            on_submit=self.update_icon,
-            # on_blur=self.update_icon,
+            #helper_text="Optional[str]",
+            on_change=self.update_icon,
             keyboard_type=ft.KeyboardType.TEXT,
-            # width=110,
             expand=1
         )
 
@@ -114,17 +100,16 @@ class TabContentVistaTrabajadores(ft.UserControl):
         all_fields = ft.Column(
             controls=[
                 ft.Row(
-                    [self.field_name, self.field_color],
+                    [self.field_name,self.field_apellido],
                 ),
                 ft.Row(
-                    [self.field_tooltip, self.field_scale],
+                    [self.field_fechaNac,self.field_numeroCel],
                 ),
                 ft.Row(
-                    [self.field_rotate, self.field_offset],
+                    [self.field_traba, self.field_numeroDNI],
                 ),
                 ft.Row(
-                    [self.field_size, self.field_opacity],
-                    alignment=ft.MainAxisAlignment.CENTER
+                    [self.field_direccion, self.field_licencia],
                 )
             ],
             alignment=ft.MainAxisAlignment.CENTER,
@@ -137,34 +122,71 @@ class TabContentVistaTrabajadores(ft.UserControl):
                 all_fields,
                 ft.Row(
                     [
-                        ft.Icon(
-                            ref=self.icon_obj,
-                            name="Nombre",
-                            size=65,
-                            color="red900"
+                        ft.FilledButton(
+                            "Guardar",
+                            icon=ft.icons.SAVE,
+                            on_click=self.copy_to_clipboard
                         )
                     ],
-                    alignment=ft.MainAxisAlignment.CENTER,
+                    alignment=ft.MainAxisAlignment.START,
                 ),
                 ft.Row(
                     [
-                        ft.FilledButton(
-                            "Copy Value to Clipboard",
-                            icon=ft.icons.COPY,
-                            on_click=self.copy_to_clipboard
+                        ft.DataTable(
+                            width=1080,
+                            bgcolor="#ffffff",
+                            sort_column_index=0,
+                            sort_ascending=True,
+                            show_checkbox_column=True,
+                            border_radius=10,
+                            divider_thickness=0,
+                            columns=[
+                                ft.DataColumn(ft.Text("First name"),on_sort=lambda e: print(f"{e.column_index}, {e.ascending}"),),
+                                ft.DataColumn(ft.Text("Last name"),on_sort=lambda e: print(f"{e.column_index}, {e.ascending}"),),
+                                ft.DataColumn(ft.Text("Age"),on_sort=lambda e: print(f"{e.column_index}, {e.ascending}"), numeric=True),
+                                ft.DataColumn(ft.Text("Actions"),on_sort=lambda e: print(f"{e.column_index}, {e.ascending}"),)
+                            ],
+                            rows=[
+                                ft.DataRow(
+                                    cells=[
+                                        ft.DataCell(ft.Text("John")),
+                                        ft.DataCell(ft.Text("Smith")),
+                                        ft.DataCell(ft.Text("43")),
+                                        ft.DataCell(ft.Text("")),
+                                    ],selected=True,on_select_changed=lambda e: print(e.data),
+                                ),
+                                ft.DataRow(
+                                    cells=[
+                                        ft.DataCell(ft.Text("Jack")),
+                                        ft.DataCell(ft.Text("Brown")),
+                                        ft.DataCell(ft.Text("19")),
+                                        ft.DataCell(ft.Text("")),
+
+                                    ],on_select_changed=lambda e: print(f"row select changed: {e.data}"),
+                                ),
+                                ft.DataRow(
+                                    cells=[
+                                        ft.DataCell(ft.Text("Alice")),
+                                        ft.DataCell(ft.Text("Wong")),
+                                        ft.DataCell(ft.Text("25")),
+                                        ft.DataCell(ft.Text("")),
+                                        
+
+                                    ],
+                                    controls=[ft.IconButton(
+                                        icon=ft.icons.CREATE_OUTLINED,
+                                        tooltip="Edit To-Do",
+                                    ),]
+                                ),
+                            ],
                         ),
-                        ft.FilledTonalButton(
-                            "Go to Docs",
-                            icon=ft.icons.DATASET_LINKED_OUTLINED,
-                            url="https://flet.dev/docs/controls/icon"
-                        )
                     ],
                     alignment=ft.MainAxisAlignment.CENTER,
                 )
             ],
             alignment=ft.MainAxisAlignment.CENTER,
-            scroll=ft.ScrollMode.HIDDEN,
-            spacing=25
+            #scroll=ft.ScrollMode.HIDDEN,
+            spacing=20
         )
 
     def update_icon(self, e: ft.ControlEvent):
@@ -300,14 +322,14 @@ class TabContentVistaTrabajadores(ft.UserControl):
             e.page.show_snack_bar(ft.SnackBar(ft.Text(f"ERROR: {x}"), open=True))
             return
 
-        self.icon_obj.current.color = self.icon_color
-        self.icon_obj.current.tooltip = self.icon_tooltip
-        self.icon_obj.current.name = self.icon_name
-        self.icon_obj.current.size = self.icon_size
-        self.icon_obj.current.opacity = self.icon_opacity
-        self.icon_obj.current.scale = self.icon_scale
-        self.icon_obj.current.rotate = self.icon_rotate
-        self.icon_obj.current.offset = self.icon_offset
+        # self.icon_obj.current.color = self.icon_color
+        # self.icon_obj.current.tooltip = self.icon_tooltip
+        # self.icon_obj.current.name = self.icon_name
+        # self.icon_obj.current.size = self.icon_size
+        # self.icon_obj.current.opacity = self.icon_opacity
+        # self.icon_obj.current.scale = self.icon_scale
+        # self.icon_obj.current.rotate = self.icon_rotate
+        # self.icon_obj.current.offset = self.icon_offset
 
         self.update()
         e.page.show_snack_bar(ft.SnackBar(ft.Text("Updated Icon!"), open=True))
