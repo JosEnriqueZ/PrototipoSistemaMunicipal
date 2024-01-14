@@ -8,19 +8,16 @@ from sqlalchemy import create_engine
 from dotenv import load_dotenv
 load_dotenv()
 
-#Base de datos
-servidor    = os.getenv("Servidor")
-nombre_db   =os.getenv("nombre_db")
-usuario     =os.getenv("Usuario")
-password    = os.getenv("Password")
+def conectar():
+    #Base de datos
+    servidor    = os.getenv("Servidor")
+    nombre_db   =os.getenv("nombre_db")
+    usuario     =os.getenv("Usuario")
+    password    = os.getenv("Password")
+    #cadena de conexion
+    #engine = create_engine("mssql+pyodbc://"+usuario+":"+password+"@"+servidor+"/"+nombre_db+"?driver=ODBC+Driver+17+for+SQL+Server")
+    cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+servidor+';DATABASE='+nombre_db+';UID='+usuario+';PWD='+ password)
+    return cnxn
 
-engine = create_engine("mssql+pyodbc://"+usuario+":"+password+"@"+servidor+"/"+nombre_db+"?driver=ODBC+Driver+17+for+SQL+Server")
-con=engine.connect()
-#----------------------------------------------------------
-#Busca datos de la tabla de trabajadores
-query = 'SELECT * FROM dbo.Trabajador;'
-df = pd.read_sql(query, con)
-
-
-#Muestra todos los trabajadores
-print(df.head())
+def cerrar_conexion(cnxn):
+    cnxn.close()
