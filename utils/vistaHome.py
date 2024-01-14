@@ -139,7 +139,7 @@ class TabcontentVistaHome(ft.UserControl):
 
         return ft.Column(
             [
-                ft.Row(
+                ft.ResponsiveRow(
                     [
                         img
                     ],

@@ -1,3 +1,5 @@
+import flet as ft
+from random import choice
 from DB import conexion
 from DB import FaenaService
 from DB import ProductoService

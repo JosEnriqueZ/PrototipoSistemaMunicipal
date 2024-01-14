@@ -24,11 +24,14 @@ from utils.vistaTrabajadores import TabContentVistaTrabajadores
 from utils.vistaFaenas import TabContentVistaFaenas
 from utils.vistaHome import TabcontentVistaHome
 
+from DB import pruebas
+
 def main(page: ft.Page):
     page.title = "SISTEMA DE CONTROL Y SEGUIMIENTO DE MAQUINAS VEHICULOS Y EQUIPOS(SCS)"
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    page.window_resizable = True
     page.update()
-   
+    
     # create application instance
     #todo = TodoApp()
 
