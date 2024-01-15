@@ -127,6 +127,8 @@ class TabContentVistaTrabajadores(ft.UserControl):
         #self.mytabla.rows.clear()
         trabajadores = TrabajadorService.todos_trabajadores(conexion.conectar())
         for trabajador in trabajadores:
+            def make_on_click(trabajador):
+                return lambda e: self.cargarDatos(trabajador)
             self.mytabla.rows.append(
                 DataRow(
                     cells=[
@@ -138,7 +140,7 @@ class TabContentVistaTrabajadores(ft.UserControl):
                         DataCell(Text(trabajador[7])),
                         DataCell(Text(trabajador[8])),
                         DataCell(Text(trabajador[9])),
-                        DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE, on_click=self.cargarDatos)),
+                        DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=make_on_click(trabajador))),
                         DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED)),
                     ]
                 )
@@ -174,18 +176,30 @@ class TabContentVistaTrabajadores(ft.UserControl):
             #scroll=ft.ScrollMode.HIDDEN,
             spacing=20
         )
-    
-    def cargarDatos(self, e: ft.ControlEvent):
-        print("hola")
-        self.field_name.value ="hola"
-        self.field_apellido.value = "hola"
-        self.field_fechaNac.value = "hola"
-        self.field_numeroCel.value = "hola"
-        self.field_traba.value = "hola"
-        self.field_numeroDNI.value = "hola"
-        self.field_direccion.value = "hola"
-        self.field_licencia.value = "hola"
+
+    def cargarDatos(self, trabajador):
+        self.field_name.value = trabajador[2]
+        self.field_apellido.value = trabajador[3]
+        self.field_fechaNac.value = trabajador[4]
+        self.field_numeroCel.value = trabajador[5]
+        self.field_traba.value = trabajador[6]
+        self.field_numeroDNI.value = trabajador[7]
+        self.field_direccion.value = trabajador[8]
+        self.field_licencia.value = trabajador[9]
         self.update()
+
+    # def cargarDatos(self, e: ft.ControlEvent):
+    #     print("hola")
+    #     self.field_name.value = "hola"
+    #     self.field_apellido.value = "hola"
+    #     self.field_fechaNac.value = "hola"
+    #     self.field_numeroCel.value = "hola"
+    #     self.field_traba.value = "hola"
+    #     self.field_numeroDNI.value = "hola"
+    #     self.field_direccion.value = "hola"
+    #     self.field_licencia.value = "hola"
+    #     self.update()
+        
 
     def LimpiarDatos(self, e: ft.ControlEvent):
         print("hola")
