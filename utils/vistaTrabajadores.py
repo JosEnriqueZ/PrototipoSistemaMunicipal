@@ -1,7 +1,7 @@
 import math
 from flet import *
-from DB import pruebas
-from View import tabla
+from DB import conexion
+from DB import TrabajadorService
 import flet as ft
 
 # the vista de trabajadores
@@ -124,6 +124,26 @@ class TabContentVistaTrabajadores(ft.UserControl):
             alignment=ft.MainAxisAlignment.START,
             spacing=11
         )
+        #self.mytabla.rows.clear()
+        trabajadores = TrabajadorService.todos_trabajadores(conexion.conectar())
+        for trabajador in trabajadores:
+            self.mytabla.rows.append(
+                DataRow(
+                    cells=[
+                        DataCell(Text(trabajador[2])),
+                        DataCell(Text(trabajador[3])),
+                        DataCell(Text(trabajador[4])),
+                        DataCell(Text(trabajador[5])),
+                        DataCell(Text(trabajador[6])),
+                        DataCell(Text(trabajador[7])),
+                        DataCell(Text(trabajador[8])),
+                        DataCell(Text(trabajador[9])),
+                        DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE, on_click=self.cargarDatos)),
+                        DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED)),
+                    ]
+                )
+            )
+        #self.update()
         return ft.Column(
             [
                 ft.Text("Registro:", weight=ft.FontWeight.BOLD, size=20),
@@ -134,6 +154,11 @@ class TabContentVistaTrabajadores(ft.UserControl):
                             "Guardar",
                             icon=ft.icons.SAVE,
                             on_click=self.CapturaDatos
+                        ),
+                        ft.FilledButton(
+                            "Limpiar",
+                            icon=ft.icons.DELETE,
+                            on_click=self.LimpiarDatos
                         )
                     ],
                     alignment=ft.MainAxisAlignment.START,
@@ -149,6 +174,30 @@ class TabContentVistaTrabajadores(ft.UserControl):
             #scroll=ft.ScrollMode.HIDDEN,
             spacing=20
         )
+    
+    def cargarDatos(self, e: ft.ControlEvent):
+        print("hola")
+        self.field_name.value ="hola"
+        self.field_apellido.value = "hola"
+        self.field_fechaNac.value = "hola"
+        self.field_numeroCel.value = "hola"
+        self.field_traba.value = "hola"
+        self.field_numeroDNI.value = "hola"
+        self.field_direccion.value = "hola"
+        self.field_licencia.value = "hola"
+        self.update()
+
+    def LimpiarDatos(self, e: ft.ControlEvent):
+        print("hola")
+        self.field_name.value =""
+        self.field_apellido.value = ""
+        self.field_fechaNac.value = ""
+        self.field_numeroCel.value = ""
+        self.field_traba.value = ""
+        self.field_numeroDNI.value = ""
+        self.field_direccion.value = ""
+        self.field_licencia.value = ""
+        self.update()
     
     
     def CapturaDatos(self, e: ft.ControlEvent):

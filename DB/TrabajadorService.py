@@ -1,6 +1,6 @@
 def todos_trabajadores(cnxn):
     cursor = cnxn.cursor()
-    select_query = "SELECT * FROM Trabajador"
+    select_query = "SELECT * FROM Trabajador where trabActivo = 1"
     cursor.execute(select_query)
     rows = cursor.fetchall()
     print(rows)
