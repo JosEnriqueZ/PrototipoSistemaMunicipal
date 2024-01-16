@@ -4,6 +4,8 @@ from datetime import datetime
 from DB import conexion
 from Service import VehiculoService
 from Service import TipoVehiculoService
+from Service import TipoCombustibleService
+
 import flet as ft
 
 
@@ -13,6 +15,7 @@ class TabContentVistaMaquinaria(ft.UserControl):
     def __init__(self):
         super().__init__()
         self.fila_editar = None
+
         #text field Vehiculo
         self.field_tipovehiculo = ft.TextField(
             label="Tipo Vehiculo",
@@ -20,10 +23,14 @@ class TabContentVistaMaquinaria(ft.UserControl):
             on_change=self.validar_nombre,
             keyboard_type=ft.KeyboardType.TEXT,
         )
+        self.tipoVehiculo_id_map = {}
         data = TipoVehiculoService.todos_TipoVehiculo(conexion.conectar())
         self.items_TipoVehiculo = ft.PopupMenuButton(
             items=[ft.PopupMenuItem(text=d[2], checked=False, on_click=self.on_item_selected_TipoVehiculo) for d in data])
-        
+        for d in data:
+            self.tipoVehiculo_id_map[d[2]] = d[0]  # Suponiendo que d[0] es el ID y d[2] es el nombre
+            #self.items_TipoVehiculo.items.append(ft.PopupMenuItem(text=d[2]))
+
         # text field COmbustible
         self.field_tipocombustible = ft.TextField(
             label="Tipo Combustible",
@@ -33,11 +40,13 @@ class TabContentVistaMaquinaria(ft.UserControl):
             keyboard_type=ft.KeyboardType.TEXT,
 
         )
-        self.item_combustible = ft.PopupMenuButton(
-            items=[ft.PopupMenuItem(
-            text="Petroleo", checked=False,on_click=self.on_item_selected_TipoCombustible),
-            ft.PopupMenuItem(
-            text="Gasolina", checked=False,on_click=self.on_item_selected_TipoCombustible)])
+        self.tipoCombustible_id_map = {}
+        data = TipoCombustibleService.todos_TipoCombustible(conexion.conectar())
+        self.items_TipoCombustible = ft.PopupMenuButton(
+            items=[ft.PopupMenuItem(text=d[3], checked=False, on_click=self.on_item_selected_TipoCombustible) for d in data])
+        for d in data:
+            self.tipoCombustible_id_map[d[3]] = d[0]  # Suponiendo que d[0] es el ID y d[2] es el nombre
+            #self.items_TipoCombustible.items.append(ft.PopupMenuItem(text=d[2]))
 
         # text Color del Vehiculo
         self.field_colorvehiculo = ft.TextField(
@@ -154,7 +163,7 @@ class TabContentVistaMaquinaria(ft.UserControl):
         all_fields = ft.Column(
             controls=[
                 ft.Row(
-                    [self.field_tipovehiculo,self.items_TipoVehiculo,self.field_tipocombustible,self.item_combustible],
+                    [self.field_tipovehiculo,self.items_TipoVehiculo,self.field_tipocombustible,self.items_TipoCombustible],
                 ),
                 ft.Row(
                     [self.field_colorvehiculo,self.field_pesovehiculo],
@@ -424,12 +433,15 @@ class TabContentVistaMaquinaria(ft.UserControl):
     def on_item_selected_TipoVehiculo(self,e: ft.ControlEvent):
         # Asigna el valor seleccionado al TextField
         self.field_tipovehiculo.value = e.control.text
+        self.selected_tipoVehiculo_id = self.tipoVehiculo_id_map[e.control.text]
+        print(self.selected_tipoVehiculo_id)
         self.update()
 
     def on_item_selected_TipoCombustible(self,e: ft.ControlEvent):
         # Asigna el valor seleccionado al TextField
         self.field_tipocombustible.value = e.control.text
-        # e.control.item_combustible
+        self.selected_tipoCombustible_id = self.tipoCombustible_id_map[e.control.text]
+        print(self.selected_tipoCombustible_id)
         self.update()
 
 if __name__ == "__main__":
