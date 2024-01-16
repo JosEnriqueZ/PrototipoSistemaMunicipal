@@ -127,8 +127,10 @@ class TabContentVistaTrabajadores(ft.UserControl):
         #self.mytabla.rows.clear()
         trabajadores = TrabajadorService.todos_trabajadores(conexion.conectar())
         for trabajador in trabajadores:
-            def make_on_click(trabajador):
+            def cargaEditar(trabajador):
                 return lambda e: self.cargarDatos(trabajador)
+            def eliminar(trabajador):
+                return lambda e: self.eliminarDatos(trabajador)
             self.mytabla.rows.append(
                 DataRow(
                     cells=[
@@ -140,8 +142,8 @@ class TabContentVistaTrabajadores(ft.UserControl):
                         DataCell(Text(trabajador[7])),
                         DataCell(Text(trabajador[8])),
                         DataCell(Text(trabajador[9])),
-                        DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=make_on_click(trabajador))),
-                        DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED)),
+                        DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(trabajador))),
+                        DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(trabajador))),
                     ]
                 )
             )
@@ -188,21 +190,15 @@ class TabContentVistaTrabajadores(ft.UserControl):
         self.field_licencia.value = trabajador[9]
         self.update()
 
-    # def cargarDatos(self, e: ft.ControlEvent):
-    #     print("hola")
-    #     self.field_name.value = "hola"
-    #     self.field_apellido.value = "hola"
-    #     self.field_fechaNac.value = "hola"
-    #     self.field_numeroCel.value = "hola"
-    #     self.field_traba.value = "hola"
-    #     self.field_numeroDNI.value = "hola"
-    #     self.field_direccion.value = "hola"
-    #     self.field_licencia.value = "hola"
-    #     self.update()
-        
+    def eliminarDatos(self, trabajador):
+        # Encuentra la fila que contiene los datos del trabajador
+        selected_row = next(row for row in self.mytabla.rows if row.cells[0].content.value == trabajador[2])
+        # Elimina esta fila de la tabla
+        self.mytabla.rows.remove(selected_row)
+        # Actualiza la página para reflejar los cambios
+        self.update()
 
     def LimpiarDatos(self, e: ft.ControlEvent):
-        print("hola")
         self.field_name.value =""
         self.field_apellido.value = ""
         self.field_fechaNac.value = ""
@@ -215,20 +211,6 @@ class TabContentVistaTrabajadores(ft.UserControl):
     
     
     def CapturaDatos(self, e: ft.ControlEvent):
-        """
-        It updates the Icon object.
-        :param e: The event object
-        """
-        print(self.field_name.value.strip())
-        print(self.field_apellido.value.strip())
-        print(self.field_fechaNac.value.strip())
-        print(self.field_numeroCel.value.strip())
-        print(self.field_traba.value.strip())
-        print(self.field_numeroDNI.value.strip())
-        print(self.field_direccion.value.strip())
-        print(self.field_licencia.value.strip())
-
-
         self.mytabla.rows.append(
             DataRow(
                 cells=[

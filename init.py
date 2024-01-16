@@ -1,66 +1,32 @@
 #importaciones
 import flet as ft
 from random import choice
-from utils.padding_utils import TabContentPadding
-from utils.alignment_utils import TabContentAlignment
-from utils.border_utils import TabContentBorder
-from utils.border_radius_utils import TabContentBorderRadius
-from utils.colors_utils import TabContentColors1, TabContentColors2
-from utils.icons_browser_utils import TabContentIconsBrowser
-from utils.gradient_utils import TabContentLinearGradient, TabContentSweepGradient, TabContentRadialGradient
-from utils.shadermask_utils import TabContentShaderMask
-from utils.shape_utils import TabContentShape
-from utils.tooltip_utils import TabContentTooltip
-from utils.icon_utils import TabContentIcon
-from utils.progress_ring_utils import TabContentProgressRing
-from utils.progress_bar_utils import TabContentProgressBar
-from utils.divider_utils import TabContentDivider
-from utils.vertical_divider_utils import TabContentVerticalDivider
-from utils.circle_avatar_utils import TabContentCircleAvatar
-from utils.shadow_utils import TabContentShadow
-from utils.blur_utils import TabContentBlur
 from utils.vistaMaquinaria import TabContentVistaMaquinaria
 from utils.vistaTrabajadores import TabContentVistaTrabajadores
 from utils.vistaFaenas import TabContentVistaFaenas
 from utils.vistaHome import TabcontentVistaHome
 
-from DB import pruebas
-
 def main(page: ft.Page):
     page.title = "SISTEMA DE CONTROL Y SEGUIMIENTO DE MAQUINAS VEHICULOS Y EQUIPOS(SCS)"
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.window_resizable = True
+    page.window_height = 800
     page.update()
-    
-    # create application instance
-    #todo = TodoApp()
 
-    #icon_content = TabContentIcon()
+    # # Define una función que se llame cuando la ventana cambie de tamaño
+    # def on_resize(event):
+    #     # Cambia la altura de la página por la altura de la ventana
+    #     page.height = event.window_height
+    #     page.update()
+
+    # # Asigna la función al evento on_resize de la página
+    # page.on_resize = on_resize
+    
     maquinariavista = TabContentVistaMaquinaria()
     maquinariatrabajador = TabContentVistaTrabajadores()
     maquinariafaena = TabContentVistaFaenas()
     maquinariahome = TabcontentVistaHome()
-    # tooltip_content = TabContentTooltip()
-    # progress_ring_content = TabContentProgressRing()
-    # progress_bar_content = TabContentProgressBar()
-    # divider_content = TabContentDivider()
-    # vertical_divider_content = TabContentVerticalDivider()
-    # circle_avatar_content = TabContentCircleAvatar()
-    # border_radius_content = TabContentBorderRadius()
-    # padding_content = TabContentPadding()
-    # icons_browser_content = TabContentIconsBrowser()
-    # colors1_content = TabContentColors1()
-    # colors2_content = TabContentColors2(page)
-    # alignment_content = TabContentAlignment()
-    # shape_content = TabContentShape()
-    # shadow_content = TabContentShadow()
-    # blur_content = TabContentBlur()
-    # border_content = TabContentBorder()
-    # linear_gradient_content = TabContentLinearGradient()
-    # radial_gradient_content = TabContentRadialGradient()
-    # sweep_gradient_content = TabContentSweepGradient()
-    # shader_mask_content = TabContentShaderMask()
-    # Estrucutura principal del proyecto
+
     page.add(
 
         ft.Tabs(
