@@ -3,7 +3,7 @@ def todos_Vehiculo(cnxn):
     select_query = "SELECT * FROM Vehiculo"
     cursor.execute(select_query)
     rows = cursor.fetchall()
-    print(rows)
+    #print(rows)
     return rows
 
 def crear_registro_Vehiculo(cnxn,VehActivo,tipoVehiculoFK,tipoCombustibleFK,VehColor,VehPeso,VehNumeroPlaca,VehMarca,VahAnio,VehRevisionTecnica,VehDescripcion,VehGalonesHoraCombustible):

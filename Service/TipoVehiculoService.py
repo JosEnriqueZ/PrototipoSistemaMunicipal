@@ -5,6 +5,13 @@ def todos_TipoVehiculo(cnxn):
     rows = cursor.fetchall()
     print(rows)
     return rows
+def todos_TipoVehiculo_Nombre(cnxn):
+    cursor = cnxn.cursor()
+    select_query = "SELECT tvNombre FROM TipoVehiculo"
+    cursor.execute(select_query)
+    rows = cursor.fetchall()
+    print(rows)
+    return rows
 
 def crear_registro_TipoVehiculo(cnxn,tvActivo,tvNombre,tvDescripcion):
     cursor = cnxn.cursor()

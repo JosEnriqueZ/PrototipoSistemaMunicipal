@@ -12,7 +12,6 @@ def main(page: ft.Page):
     page.window_resizable = True
     page.window_height = 800
     page.update()
-
     # # Define una función que se llame cuando la ventana cambie de tamaño
     # def on_resize(event):
     #     # Cambia la altura de la página por la altura de la ventana

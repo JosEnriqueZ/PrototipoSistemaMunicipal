@@ -3,7 +3,7 @@ def todos_trabajadores(cnxn):
     select_query = "SELECT * FROM Trabajador where trabActivo = 1"
     cursor.execute(select_query)
     rows = cursor.fetchall()
-    print(rows)
+    #print(rows)
     return rows
 
 def crear_registro_trabajador(cnxn, trabActivo, trabNombre, trabApellido, trabFechaNac, trabCel, trabTrabador, trabDNI, trabDireccion, trabLicenciaConducir):

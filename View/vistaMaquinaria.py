@@ -3,6 +3,7 @@ from flet import *
 from datetime import datetime
 from DB import conexion
 from Service import VehiculoService
+from Service import TipoVehiculoService
 import flet as ft
 
 
@@ -12,80 +13,99 @@ class TabContentVistaMaquinaria(ft.UserControl):
     def __init__(self):
         super().__init__()
         self.fila_editar = None
-        #text field nombre
+        #text field Vehiculo
         self.field_name = ft.TextField(
-            label="Nombre",
-            hint_text="Ingrese tipo Vehiculo",
+            label="Tipo Vehiculo",
             value="",
             on_change=self.validar_nombre,
             keyboard_type=ft.KeyboardType.TEXT,
         )
-
-        # text field apellido
+        data = TipoVehiculoService.todos_TipoVehiculo(conexion.conectar())
+        self.items_TipoVehiculo = ft.PopupMenuButton(
+            items=[ft.PopupMenuItem(text=d[2], checked=False, on_click=self.on_item_selected) for d in data])
+        
+        # text field COmbustible
         self.field_apellido = ft.TextField(
-            label="Apellido",
-            hint_text="Ingrese su apellido",
+            label="Tipo Combustible",
             value="",
             on_change=self.validar_nombre,
             #helper_text="Optional[str]",
             keyboard_type=ft.KeyboardType.TEXT,
 
         )
+        self.item_combustible = ft.PopupMenuButton(
+            items=[ft.PopupMenuItem(
+            text="Petroleo", checked=False),
+            ft.PopupMenuItem(
+            text="Gasolina", checked=False)])
 
-        # text field Fecha Nacimiento
+        # text Color del Vehiculo
         self.field_fechaNac = ft.TextField(
-            label="Fecha Nacimiento",
-            hint_text="DD-MM-YYYY",
+            label="Color del Vehiculo",
             value="",
-            on_change=self.validar_fecha,
             keyboard_type=ft.KeyboardType.TEXT,
 
         )
 
-        # text field Numero de Telefono
+        # text field Peso del Vehiculo
         self.field_numeroCel = ft.TextField(
-            label="Numero de Celular",
-            hint_text="Ingrese su numero de celular",
+            label="Peso del Vehiculo",
+            hint_text="Ingrese Peso del Vehiculo",
             value="",
             on_change=self.validar_numeros,
             keyboard_type=ft.KeyboardType.NUMBER,
 
         )
 
-        # text field Numero de Trabajador
+        # text field Numero de Placa
         self.field_traba = ft.TextField(
-            label="Trabajador",
-            hint_text="Ingrese Rol del Trabajador",
+            label="Numero de Placa",
+            hint_text="Ingrese Numero de Placa",
             value="",
             keyboard_type=ft.KeyboardType.TEXT,
 
         )
 
-        # text field Numero de DNI
+        # text field Marca
         self.field_numeroDNI = ft.TextField(
-            label="DNI",
-            hint_text="Ingrese su DNI",
+            label="Marca",
+            hint_text="Ingrese la Marca",
             value="",
-            on_change=self.validar_numeros,
-            keyboard_type=ft.KeyboardType.NUMBER,
+            keyboard_type=ft.KeyboardType.TEXT,
 
         )
 
-        # text field Direccion
+        # text field Fabricacion
         self.field_direccion = ft.TextField(
-            label="Direccion",
-            hint_text="Ingrese su direccion",
+            label="Año de Fabricacion",
+            hint_text="Ingrese el Año de Fabricacion",
             value="",
-            keyboard_type=ft.KeyboardType.TEXT,
+            keyboard_type=ft.KeyboardType.NUMBER,
         
         )
 
-        # text field tipo Licencia Conducir
+        # text field Revision Tecnica
         self.field_licencia = ft.TextField(
-            label="Categoria Licencia Conducir",
+            label="Revision Tecnica",
+            hint_text="Revision Tecnica",
+            value="",
+            keyboard_type=ft.KeyboardType.TEXT,
+
+        )
+        # text field Descripcion
+        self.field_licencia = ft.TextField(
+            label="Descripcion",
             hint_text="Ingrese su categoria de licencia de conducir",
             value="",
             keyboard_type=ft.KeyboardType.TEXT,
+
+        )
+        # text field Galones x hora Combustible
+        self.field_licencia = ft.TextField(
+            label="Galones x hora Combustible",
+            hint_text="Galones x hora Combustible",
+            value="",
+            keyboard_type=ft.KeyboardType.NUMBER,
 
         )
 
@@ -127,29 +147,13 @@ class TabContentVistaMaquinaria(ft.UserControl):
                             "Limpiar",
                             icon=ft.icons.DELETE,
                             on_click=self.LimpiarDatos
-                        )
-        self.dlg = ft.AlertDialog(
-        title=ft.Text("Hello, you!"), on_dismiss=lambda e: print("Dialog dismissed!")
-        )
-        
-
-        self.dlg_modal = ft.AlertDialog(
-            modal=True,
-            title=ft.Text("Please confirm"),
-            content=ft.Text("Do you really want to delete all those files?"),
-            actions=[
-                ft.TextButton("Yes", on_click=self.close_dlg),
-                ft.TextButton("No", on_click=self.close_dlg),
-            ],
-            actions_alignment=ft.MainAxisAlignment.END,
-            on_dismiss=lambda e: print("Modal dialog dismissed!"),
-        )
+                        )     
 
     def build(self):
         all_fields = ft.Column(
             controls=[
                 ft.Row(
-                    [self.field_name,self.field_apellido],
+                    [self.field_name,self.items_TipoVehiculo,self.field_apellido,self.item_combustible],
                 ),
                 ft.Row(
                     [self.field_fechaNac,self.field_numeroCel],
@@ -195,11 +199,9 @@ class TabContentVistaMaquinaria(ft.UserControl):
                 all_fields,
                 ft.Row(
                     [
-                        ft.ElevatedButton("Open dialog", on_click=self.open_dlg),
-                        ft.ElevatedButton("Open modal dialog", on_click=self.open_dlg_modal),
-                        # self.boton_guardar,
-                        # self.boton_editar,
-                        # self.boton_limpiar
+                        self.boton_guardar,
+                        self.boton_editar,
+                        self.boton_limpiar
                     ],
                     alignment=ft.MainAxisAlignment.START,
                 ),
@@ -373,19 +375,12 @@ class TabContentVistaMaquinaria(ft.UserControl):
         self.update()
 
 
-    def open_dlg(self,e: ft.ControlEvent):
-        self.dialog = self.dlg
-        self.open = True
+    def on_item_selected(self, e: ft.ControlEvent):
+        # Asigna el valor seleccionado al TextField
+        print("Entra")
+        self.field_name.value = "Hola"
         self.update()
 
-    def open_dlg_modal(self,e: ft.ControlEvent):
-        self.dialog = self.dlg_modal
-        self.dlg_modal.open = True
-        self.update()
-
-    def close_dlg(self,e: ft.ControlEvent):
-        self.dlg_modal.open = False
-        self.update()
 
 
 if __name__ == "__main__":
