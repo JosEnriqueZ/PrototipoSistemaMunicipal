@@ -23,7 +23,7 @@ def leer_registro_TipoCombustible(cnxn, idTipoCombustible):
 
 def actualizar_registro_TipoCombustible(cnxn,tcActivo,tcCodigoCombustible,tcNombre, idTipoCombustible):
     cursor = cnxn.cursor()
-    update_query = "UPDATE TipoCombustible SET tcActivo = ? tcCodigoCombustible = ? tcNombre = ? WHERE idTipoCombustible = ?"
+    update_query = "UPDATE TipoCombustible SET tcActivo = ? ,tcCodigoCombustible = ? ,tcNombre = ? WHERE idTipoCombustible = ?"
     data = ( tcActivo,tcCodigoCombustible,tcNombre, idTipoCombustible)
     cursor.execute(update_query, data)
     cnxn.commit()

@@ -14,8 +14,11 @@ class TabContentVistaMaquinaria(ft.UserControl):
 
     def __init__(self):
         super().__init__()
+        self.f_idvehiculo = None
         self.fila_editar = None
-
+        self.selected_tipoCombustible_id = None
+        self.selected_tipoVehiculo_id = None
+        
         #text field Vehiculo
         self.field_tipovehiculo = ft.TextField(
             label="Tipo Vehiculo",
@@ -184,6 +187,7 @@ class TabContentVistaMaquinaria(ft.UserControl):
         )
         self.mytabla.rows.clear()
         trabajadores = VehiculoService.todos_Vehiculo(conexion.conectar())
+        
         for trabajador in trabajadores:
             def cargaEditar(trabajador):
                 return lambda e: self.cargarDatos(trabajador)
@@ -192,8 +196,8 @@ class TabContentVistaMaquinaria(ft.UserControl):
             self.mytabla.rows.append(
                 DataRow(
                     cells=[
-                        DataCell(Text(trabajador[2])),
-                        DataCell(Text(trabajador[3])),
+                        DataCell(Text(trabajador[12])),
+                        DataCell(Text(trabajador[13])),
                         DataCell(Text(trabajador[4])),
                         DataCell(Text(trabajador[5])),
                         DataCell(Text(trabajador[6])),
@@ -233,9 +237,12 @@ class TabContentVistaMaquinaria(ft.UserControl):
         )
 
     def cargarDatos(self, trabajador):
+        self.f_idvehiculo = trabajador[0]
+        self.selected_tipoVehiculo_id = trabajador[1]
+        self.selected_tipoCombustible_id = trabajador[2]
         self.fila_editar = trabajador[0]
-        self.field_tipovehiculo.value = trabajador[2]
-        self.field_tipocombustible.value = trabajador[3]
+        self.field_tipovehiculo.value = trabajador[12]
+        self.field_tipocombustible.value = trabajador[13]
         # fecha_str = trabajador[4].strftime("%d-%m-%Y")
         self.field_colorvehiculo.value = trabajador[4]
         self.field_pesovehiculo.value = trabajador[5]
@@ -290,26 +297,21 @@ class TabContentVistaMaquinaria(ft.UserControl):
             self.mytabla.rows[self.fila_editar-1].cells[7].content.value = self.field_revisiont.value
             self.mytabla.rows[self.fila_editar-1].cells[8].content.value = self.field_descripcion.value
             self.mytabla.rows[self.fila_editar-1].cells[9].content.value = self.field_galones.value
-
-            Vehiculo=TipoVehiculoService.TipoVehiculo_Nombre(conexion.conectar(), self.field_tipovehiculo.value)
-            print(Vehiculo)
-            self.TipoCombustible= ""
-            if self.field_tipocombustible.value == "Petroleo":
-                self.TipoCombustible=1
-            else:
-                self.TipoCombustible=2
+            
             #fecha = datetime.strptime(self.field_colorvehiculo.value, "%d-%m-%Y")
-            # VehiculoService.actualizar_registro_Vehiculo(conexion.conectar(), 1, "Vehiculo[0]",
-            #                                               self.TipoCombustible, 
-            #                                               self.field_colorvehiculo, 
-            #                                               self.field_pesovehiculo.value, 
-            #                                               self.field_numerop.value, 
-            #                                               self.field_marca.value, 
-            #                                               self.field_año.value, 
-            #                                               self.field_revisiont.value,
-            #                                               self.field_descripcion.value,
-            #                                               self.field_galones.value)
-            # conexion.cerrar_conexion(conexion.conectar())
+            VehiculoService.actualizar_registro_Vehiculo(conexion.conectar(), 1, 
+                                                        self.selected_tipoVehiculo_id, 
+                                                        self.selected_tipoCombustible_id,
+                                                        self.field_colorvehiculo, 
+                                                        self.field_pesovehiculo.value, 
+                                                        self.field_numerop.value, 
+                                                        self.field_marca.value, 
+                                                        self.field_año.value, 
+                                                        self.field_revisiont.value,
+                                                        self.field_descripcion.value,
+                                                        self.field_galones.value,
+                                                        self.f_idvehiculo)
+            conexion.cerrar_conexion(conexion.conectar())
             self.mytabla.rows.clear()
             trabajadores = VehiculoService.todos_Vehiculo(conexion.conectar())
             for trabajador in trabajadores:
@@ -320,8 +322,8 @@ class TabContentVistaMaquinaria(ft.UserControl):
                 self.mytabla.rows.append(
                     DataRow(
                         cells=[
-                            DataCell(Text(trabajador[2])),
-                            DataCell(Text(trabajador[3])),
+                            DataCell(Text(trabajador[12])),
+                            DataCell(Text(trabajador[13])),
                             DataCell(Text(trabajador[4])),
                             DataCell(Text(trabajador[5])),
                             DataCell(Text(trabajador[6])),
@@ -335,7 +337,7 @@ class TabContentVistaMaquinaria(ft.UserControl):
                         ]
                     )
                 )
-                self.update()
+                # self.update()
             trabajadores = VehiculoService.todos_Vehiculo(conexion.conectar())
             # Actualiza las demás celdas de la misma manera
             self.fila_editar = None  # Restablece el índice de la fila que se está editando
@@ -344,8 +346,8 @@ class TabContentVistaMaquinaria(ft.UserControl):
 
             """Guardar"""
             #fecha = datetime.strptime(self.field_colorvehiculo.value, "%d-%m-%Y")
-            VehiculoService.crear_registro_Vehiculo(conexion.conectar(), 1, self.field_tipovehiculo.value, 
-                                                    self.field_tipocombustible.value, 
+            VehiculoService.crear_registro_Vehiculo(conexion.conectar(), 1, self.selected_tipoVehiculo_id, 
+                                                    self.selected_tipoCombustible_id,
                                                     self.field_colorvehiculo.value, 
                                                     self.field_pesovehiculo.value, 
                                                     self.field_numerop.value, 
@@ -365,8 +367,8 @@ class TabContentVistaMaquinaria(ft.UserControl):
                 self.mytabla.rows.append(
                     DataRow(
                         cells=[
-                            DataCell(Text(trabajador[2])),
-                            DataCell(Text(trabajador[3])),
+                            DataCell(Text(trabajador[12])),
+                            DataCell(Text(trabajador[13])),
                             DataCell(Text(trabajador[4])),
                             DataCell(Text(trabajador[5])),
                             DataCell(Text(trabajador[6])),
@@ -380,7 +382,7 @@ class TabContentVistaMaquinaria(ft.UserControl):
                         ]
                     )
                 )
-                self.update()
+                # self.update()
             # Si no se está editando ninguna fila, agrega una nueva fila
             self.mytabla.rows.append(
                 DataRow(
@@ -399,7 +401,7 @@ class TabContentVistaMaquinaria(ft.UserControl):
                 
                 )
             )
-        self.update()
+            self.update()
     #Validaciones
     def validar_nombre(self, e: ft.ControlEvent):
             # Verifica si el valor ingresado por el usuario contiene solo letras.

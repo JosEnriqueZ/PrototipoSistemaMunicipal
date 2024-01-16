@@ -23,7 +23,7 @@ def leer_registro_Usuario(cnxn, idUsuario):
 
 def actualizar_registro_Usuario(cnxn,usuActivo,idTrabajadorFK,usuName,usuRut,usuPass,usuRol, idUsuario):
     cursor = cnxn.cursor()
-    update_query = "UPDATE Usuario SET usuActivo = ? idTrabajadorFK = ? usuName = ? usuRut = ? usuPass = ? usuRol = ? WHERE idUsuario = ?"
+    update_query = "UPDATE Usuario SET usuActivo = ? ,idTrabajadorFK = ? ,usuName = ? ,usuRut = ? ,usuPass = ? ,usuRol = ? WHERE idUsuario = ?"
     data = ( usuActivo,idTrabajadorFK,usuName,usuRut,usuPass,usuRol, idUsuario)
     cursor.execute(update_query, data)
     cnxn.commit()

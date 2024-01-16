@@ -23,7 +23,7 @@ def leer_registro_Faena(cnxn, idTrabajador):
 
 def actualizar_registro_Faena(cnxn, faenaActivo, idTrabajadorFK, idUsuarioFK, idVehiculoFK, faenaFechaTrabajo, faenaHoras, faenaRegion, faenaDescripcion, faenaDireccionTrabajo,faenaKilometrosAreaTrabajo, idFaena):
     cursor = cnxn.cursor()
-    update_query = "UPDATE Faena SET faenaActivo = ? idTrabajadorFK = ? idUsuarioFK = ? idVehiculoFK = ? faenaFechaTrabajo = ? faenaHoras = ? faenaRegion = ? faenaDescripcion = ? faenaDireccionTrabajo = ? faenaKilometrosAreaTrabajo = ? WHERE idFaena = ?"
+    update_query = "UPDATE Faena SET faenaActivo = ? ,idTrabajadorFK = ? ,idUsuarioFK = ? ,idVehiculoFK = ? ,faenaFechaTrabajo = ? ,faenaHoras = ? ,faenaRegion = ? ,faenaDescripcion = ? ,faenaDireccionTrabajo = ? ,faenaKilometrosAreaTrabajo = ? WHERE idFaena = ?"
     data = ( faenaActivo, idTrabajadorFK, idUsuarioFK, idVehiculoFK, faenaFechaTrabajo, faenaHoras, faenaRegion, faenaDescripcion, faenaDireccionTrabajo,faenaKilometrosAreaTrabajo, idFaena)
     cursor.execute(update_query, data)
     cnxn.commit()

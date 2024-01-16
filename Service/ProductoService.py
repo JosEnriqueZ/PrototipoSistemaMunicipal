@@ -23,7 +23,7 @@ def leer_registro_Producto(cnxn, idProducto):
 
 def actualizar_registro_Producto(cnxn,ProdActivo,idUsuarioFK, ProdTipo, ProdNombre,ProdFechaIngreso, ProdFechaUso, ProdStock, idProducto):
     cursor = cnxn.cursor()
-    update_query = "UPDATE Producto SET ProdActivo = ? idTrabajadorFK = ? idUsuarioFK = ? idVehiculoFK = ? faenaFechaTrabajo = ? faenaHoras = ? faenaRegion = ? faenaDescripcion = ? faenaDireccionTrabajo = ? faenaKilometrosAreaTrabajo = ? WHERE idProducto = ?"
+    update_query = "UPDATE Producto SET ProdActivo = ? ,idTrabajadorFK = ? ,idUsuarioFK = ? ,idVehiculoFK = ? ,faenaFechaTrabajo = ? ,faenaHoras = ? ,faenaRegion = ? ,faenaDescripcion = ? ,faenaDireccionTrabajo = ? ,faenaKilometrosAreaTrabajo = ? WHERE idProducto = ?"
     data = ( ProdActivo,idUsuarioFK, ProdTipo, ProdNombre,ProdFechaIngreso, ProdFechaUso, ProdStock, idProducto)
     cursor.execute(update_query, data)
     cnxn.commit()

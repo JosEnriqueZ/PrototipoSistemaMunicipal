@@ -23,7 +23,7 @@ def leer_registro_Report(cnxn, idTrabajador):
 
 def actualizar_registro_Report(cnxn,reportActivo,idTrabajadorFK,idFaenaFK,reportTipo,reportPlacaMaquinaria,reportFecha, idReport):
     cursor = cnxn.cursor()
-    update_query = "UPDATE Report SET reportActivo = ? idTrabajadorFK = ? idFaenaFK = ? reportTipo = ? reportPlacaMaquinaria = ? reportFecha = ? WHERE idReport = ?"
+    update_query = "UPDATE Report SET reportActivo = ? ,idTrabajadorFK = ? ,idFaenaFK = ? ,reportTipo = ? ,reportPlacaMaquinaria = ? ,reportFecha = ? WHERE idReport = ?"
     data = ( reportActivo,idTrabajadorFK,idFaenaFK,reportTipo,reportPlacaMaquinaria,reportFecha, idReport)
     cursor.execute(update_query, data)
     cnxn.commit()

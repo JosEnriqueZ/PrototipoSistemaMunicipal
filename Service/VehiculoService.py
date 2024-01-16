@@ -1,6 +1,10 @@
 def todos_Vehiculo(cnxn):
     cursor = cnxn.cursor()
-    select_query = "SELECT * FROM Vehiculo"
+    select_query = """
+    SELECT Vehiculo.*, TipoVehiculo.tvNombre,TipoCombustible.tcNombre
+        FROM Vehiculo 
+        JOIN TipoVehiculo ON Vehiculo.tipoVehiculoFK = TipoVehiculo.idTipoVehiculo
+        JOIN TipoCombustible ON Vehiculo.tipoCombustibleFK= TipoCombustible.idTipoCombustible"""
     cursor.execute(select_query)
     rows = cursor.fetchall()
     #print(rows)
@@ -23,7 +27,7 @@ def leer_registro_Vehiculo(cnxn, idVehiculo):
 
 def actualizar_registro_Vehiculo(cnxn,VehActivo,tipoVehiculoFK,tipoCombustibleFK,VehColor,VehPeso,VehNumeroPlaca,VehMarca,VahAnio,VehRevisionTecnica,VehDescripcion,VehGalonesHoraCombustible, idVehiculo):
     cursor = cnxn.cursor()
-    update_query = "UPDATE Vehiculo SET VehActivo = ? tipoVehiculoFK = ? tipoCombustibleFK = ? VehColor = ? VehPeso = ? VehNumeroPlaca = ? VehMarca = ? VahAnio = ? VehRevisionTecnica = ? VehDescripcion = ? VehGalonesHoraCombustible = ?WHERE idVehiculo = ?"
+    update_query = "UPDATE Vehiculo SET VehActivo = ? ,tipoVehiculoFK = ? ,tipoCombustibleFK = ? ,VehColor = ? ,VehPeso = ? ,VehNumeroPlaca = ? ,VehMarca = ? ,VahAnio = ? ,VehRevisionTecnica = ? ,VehDescripcion = ? ,VehGalonesHoraCombustible = ? WHERE idVehiculo = ?"
     data = ( VehActivo,tipoVehiculoFK,tipoCombustibleFK,VehColor,VehPeso,VehNumeroPlaca,VehMarca,VahAnio,VehRevisionTecnica,VehDescripcion,VehGalonesHoraCombustible, idVehiculo)
     cursor.execute(update_query, data)
     cnxn.commit()
