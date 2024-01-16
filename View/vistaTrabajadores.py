@@ -1,7 +1,7 @@
 import math
 from flet import *
 from DB import conexion
-from DB import TrabajadorService
+from Service import TrabajadorService
 import flet as ft
 
 # the vista de trabajadores
