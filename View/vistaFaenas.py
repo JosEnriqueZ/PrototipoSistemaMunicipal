@@ -1,331 +1,425 @@
 import math
 from flet import *
+from datetime import datetime
+from DB import conexion
+from Service import FaenaService
+from Service import TrabajadorService
+from Service import UsuarioService
+from Service import VehiculoService
+from Service import TipoVehiculoService
+from Service import TipoCombustibleService
+
 import flet as ft
-
-
 # the content of the icon tab
 class TabContentVistaFaenas(ft.UserControl):
 
     def __init__(self):
         super().__init__()
-        self.icon_color = "red900"
-        #self.icon_name = "cake_rounded"
-        self.icon_size = 65
-        self.icon_tooltip = None
-        self.icon_opacity = None
-        self.icon_rotate = None
-        self.icon_scale = None
-        self.icon_offset = None
-
-        self.icon_obj = ft.Ref[ft.Icon]()
-
-        # text field for tooltip property of the Icon object
-        self.field_tooltip = ft.TextField(
-            label="tooltip",
+        self.f_idvehiculo = None
+        self.fila_editar = None
+        self.selected_trabajador_id = None
+        self.selected_Vehiculo_id = None
+        
+        #text field Trabajador
+        self.field_trabajador = ft.TextField(
+            label="Trabajador",
             value="",
-            helper_text="Optional[str]",
-            on_change=self.update_icon,
+            on_change=self.validar_nombre,
             keyboard_type=ft.KeyboardType.TEXT,
-            expand=1
         )
+        self.trabajador_id_map = {}
+        data = TrabajadorService.todos_trabajadores(conexion.conectar())
+        self.items_Trabajador = ft.PopupMenuButton(
+            items=[ft.PopupMenuItem(text=d[2], checked=False, on_click=self.on_item_selected_TipoVehiculo) for d in data])
+        for d in data:
+            self.trabajador_id_map[d[2]] = d[0]  # Suponiendo que d[0] es el ID y d[2] es el nombre
+            #self.items_Trabajador.items.append(ft.PopupMenuItem(text=d[2]))
 
-        # text field for color property of the Icon object
-        self.field_color = ft.TextField(
-            label="color",
-            value="red900",
-            on_submit=self.update_icon,
-            # on_blur=self.update_icon,
+        # text field Vehiculo
+        self.field_vehiculo = ft.TextField(
+            label="Vehiculo",
+            value="",
+            on_change=self.validar_nombre,
+            #helper_text="Optional[str]",
             keyboard_type=ft.KeyboardType.TEXT,
-            hint_text="colors.RED_50 or red50",
-            expand=1
-        )
 
-        # text field for the size property of the Icon object
-        self.field_size = ft.TextField(
-            label="size",
-            value="65",
-            helper_text="Union[int, float]",
-            on_submit=self.update_icon,
-            # on_blur=self.update_icon,
+        )
+        self.vehiculo_id_map = {}
+        data = VehiculoService.todos_Vehiculo(conexion.conectar())
+        self.items_Vehiculo = ft.PopupMenuButton(
+            items=[ft.PopupMenuItem(text=d[12], checked=False, on_click=self.on_item_selected_TipoVehiculo) for d in data])
+        for d in data:
+            self.vehiculo_id_map[d[12]] = d[0]  # Suponiendo que d[0] es el ID y d[2] es el nombre
+            #self.items_Trabajador.items.append(ft.PopupMenuItem(text=d[2]))
+        
+        # text field Fecha
+        self.field_fecha = ft.TextField(
+            label="Fecha",
+            hint_text="DD-MM-YYYY",
+            value="",
+            on_change=self.validar_fecha,
+            keyboard_type=ft.KeyboardType.TEXT,
+
+        )
+        # text field Horas
+        self.field_horas = ft.TextField(
+            label="Horas",
+            hint_text="Ingrese las horas",
+            value="",
+            on_change=self.validar_numeros,
             keyboard_type=ft.KeyboardType.NUMBER,
-            # expand=1
-            width=170,
-        )
 
-        # text field for the name property of the Icon object
-        self.field_name = ft.TextField(
-            label="name",
-            hint_text="ft.icons.COPY or COPY or copy",
-            value="cake_rounded",
-            on_submit=self.update_icon,
-            # on_blur=self.update_icon,
-            keyboard_type=ft.KeyboardType.TEXT,
-            expand=2
         )
-
-        # text field for the opacity property of the Icon object
-        self.field_opacity = ft.TextField(
-            label="opacity",
+        # text field Region
+        self.field_region = ft.TextField(
+            label="Region",
             value="",
-            helper_text="Union[int, float]",
-            on_change=self.update_icon,
-            # on_blur=self.update_icon,
+            on_change=self.validar_nombre,
+            #helper_text="Optional[str]",
+            keyboard_type=ft.KeyboardType.TEXT,
+
+        )
+        # text field Descripcion
+        self.field_descripcion = ft.TextField(
+            label="Descripcion",
+            value="",
+            on_change=self.validar_nombre,
+            #helper_text="Optional[str]",
+            keyboard_type=ft.KeyboardType.TEXT,
+
+        )
+        # text field Direccion
+        self.field_direccion = ft.TextField(
+            label="Direccion",
+            value="",
+            on_change=self.validar_nombre,
+            #helper_text="Optional[str]",
+            keyboard_type=ft.KeyboardType.TEXT,
+
+        )
+        # text field kilometros area
+        self.field_kilometrosa = ft.TextField(
+            label="Horas",
+            hint_text="Ingrese los kilometros area",
+            value="",
+            on_change=self.validar_numeros,
             keyboard_type=ft.KeyboardType.NUMBER,
-            width=170,
-            # expand=1
+
+        )
+        self.mytabla = ft.DataTable(
+            border=ft.border.all(2, "black"),
+            border_radius=10,
+            vertical_lines=ft.border.BorderSide(3, "black"),
+            horizontal_lines=ft.border.BorderSide(1, "black"),
+            column_spacing=50,
+            bgcolor="white",
+            columns=[
+                ft.DataColumn(ft.Text("Trabajador")),
+                ft.DataColumn(ft.Text("Vehiculo")),
+                ft.DataColumn(ft.Text("Fecha")),
+                ft.DataColumn(ft.Text("Horas")),
+                ft.DataColumn(ft.Text("Region")),
+                ft.DataColumn(ft.Text("Descripcion")),
+                ft.DataColumn(ft.Text("Direccion")),
+                ft.DataColumn(ft.Text("Kilometros")),
+                ft.DataColumn(ft.Text("Editar")),
+                ft.DataColumn(ft.Text("Eliminar")),
+            ],
+            rows=[],
         )
 
-        # text field for the rotate property of the Icon object
-        self.field_rotate = ft.TextField(
-            label="rotate | angle in degrees",
-            value="",
-            helper_text="Union[int, float, Rotate]",
-            on_submit=self.update_icon,
-            # on_blur=self.update_icon,
-            keyboard_type=ft.KeyboardType.TEXT,
-            expand=1
-        )
-
-        # text field for the offset property of the Icon object
-        self.field_offset = ft.TextField(
-            label="offset",
-            value="",
-            helper_text="Optional[Offset, tuple]",
-            on_submit=self.update_icon,
-            # on_blur=self.update_icon,
-            keyboard_type=ft.KeyboardType.TEXT,
-            expand=1
-        )
-
-        # text field for the scale property of the Icon object
-        self.field_scale = ft.TextField(
-            label="scale",
-            value="",
-            helper_text="Union[int, float, Scale]",
-            on_submit=self.update_icon,
-            # on_blur=self.update_icon,
-            keyboard_type=ft.KeyboardType.TEXT,
-            # width=110,
-            expand=1
-        )
+        self.boton_guardar= ft.FilledButton(
+                            "Guardar",
+                            icon=ft.icons.SAVE,
+                            on_click=self.EditaryGuardar
+                        )
+        self.boton_editar=ft.FilledButton(
+                            "Editar",
+                            visible=False,
+                            icon=ft.icons.SAVE,
+                            on_click=self.EditaryGuardar
+                        )
+        self.boton_limpiar=ft.FilledButton(
+                            "Limpiar",
+                            icon=ft.icons.DELETE,
+                            on_click=self.LimpiarDatos
+                        )     
 
     def build(self):
         all_fields = ft.Column(
             controls=[
                 ft.Row(
-                    [self.field_name, self.field_color],
+                    [self.field_trabajador,self.items_Trabajador,self.field_vehiculo,self.items_Vehiculo],
                 ),
                 ft.Row(
-                    [self.field_tooltip, self.field_scale],
+                    [self.field_fecha,self.field_horas],
                 ),
                 ft.Row(
-                    [self.field_rotate, self.field_offset],
+                    [self.field_region, self.field_descripcion],
                 ),
                 ft.Row(
-                    [self.field_size, self.field_opacity],
-                    alignment=ft.MainAxisAlignment.CENTER
-                )
+                    [self.field_kilometrosa],
+                ),
+                
             ],
-            alignment=ft.MainAxisAlignment.CENTER,
+            alignment=ft.MainAxisAlignment.START,
             spacing=11
         )
-
+        self.mytabla.rows.clear()
+        faenas = FaenaService.todos_faenas(conexion.conectar())
+        
+        for vehiculo in faenas:
+            def cargaEditar(vehiculo):
+                return lambda e: self.cargarDatos(vehiculo)
+            def eliminar(vehiculo):
+                return lambda e: self.eliminarDatos(vehiculo)
+            self.mytabla.rows.append(
+                DataRow(
+                    cells=[
+                        DataCell(Text(vehiculo[2])),
+                        DataCell(Text(vehiculo[4])),
+                        DataCell(Text(vehiculo[5])),
+                        DataCell(Text(vehiculo[6])),
+                        DataCell(Text(vehiculo[7])),
+                        DataCell(Text(vehiculo[8])),
+                        DataCell(Text(vehiculo[9])),
+                        DataCell(Text(vehiculo[10])),
+                        DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(vehiculo))),
+                        DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(vehiculo))),
+                    ]
+                )
+            )
+        #self.update()
         return ft.Column(
             [
-                ft.Text("Icon Builder:", weight=ft.FontWeight.BOLD, size=21),
+                ft.Text("Registro:", weight=ft.FontWeight.BOLD, size=20),
                 all_fields,
                 ft.Row(
                     [
-                        ft.Icon(
-                            ref=self.icon_obj,
-                            name="cake_rounded",
-                            size=65,
-                            color="red900"
-                        )
+                        self.boton_guardar,
+                        self.boton_editar,
+                        self.boton_limpiar
                     ],
-                    alignment=ft.MainAxisAlignment.CENTER,
+                    alignment=ft.MainAxisAlignment.START,
                 ),
                 ft.Row(
                     [
-                        ft.FilledButton(
-                            "Copy Value to Clipboard",
-                            icon=ft.icons.COPY,
-                            on_click=self.copy_to_clipboard
-                        ),
-                        ft.FilledTonalButton(
-                            "Go to Docs",
-                            icon=ft.icons.DATASET_LINKED_OUTLINED,
-                            url="https://flet.dev/docs/controls/icon"
-                        )
+                        self.mytabla   
                     ],
-                    alignment=ft.MainAxisAlignment.CENTER,
+                    alignment=ft.MainAxisAlignment.START,
                 )
             ],
-            alignment=ft.MainAxisAlignment.CENTER,
-            scroll=ft.ScrollMode.HIDDEN,
-            spacing=25
+            alignment=ft.MainAxisAlignment.START,
+            #scroll=ft.ScrollMode.HIDDEN,
+            spacing=20
         )
 
-    def update_icon(self, e: ft.ControlEvent):
-        """
-        It updates the Icon object.
-        :param e: The event object
-        """
-
-        self.icon_size= int(self.field_size.value.strip()) if self.field_size.value.strip().isnumeric() else 65
-
-        self.icon_color = self.field_color.value.strip() if self.field_color.value.strip() else None
-        self.icon_name = self.field_name.value.strip() if self.field_name.value.strip() else "cake_rounded"
-        self.icon_tooltip = self.field_tooltip.value.strip() if self.field_tooltip.value.strip() else None
-
-        self.icon_offset = self.field_offset.value.strip() if self.field_offset.value.strip() else "None"
-        self.icon_rotate = self.field_rotate.value.strip() if self.field_rotate.value.strip() else "None"
-        self.icon_scale = self.field_scale.value.strip() if self.field_scale.value.strip() else "None"
-
-        # name
-        try:
-            if self.icon_name is not None:
-                self.icon_name = eval(self.icon_name) if '.' in self.icon_name else self.icon_name.lower()
-
-                # Getting all the icons from flet's icons module
-                list_started = False
-                all_flet_icons = list()
-                for value in vars(ft.icons).values():
-                    if value == "ten_k":
-                        list_started = True
-                    if list_started:
-                        all_flet_icons.append(value)
-
-                # checking if all the entered icons exist in flet
-                if self.icon_name not in all_flet_icons:
-                    raise ValueError("Wrong Value!")
-        except Exception as x:
-            print(f"Name Error: {x}")
-            e.page.show_snack_bar(
-                ft.SnackBar(
-                    ft.Text(
-                        "ERROR: There seems to be an error with your icon's name. See the Icon tabs for "
-                        f"help with choosing an icon name!"),
-                    open=True))
-            return
-
-        # color
-        try:
-            if self.icon_color is not None:
-                self.icon_color = eval(self.icon_color) if '.' in self.icon_color else self.icon_color.lower()
-
-                # Getting all the colors from flet's colors module
-                list_started = False
-                all_flet_colors = list()
-                for value in vars(ft.colors).values():
-                    if value == "primary":
-                        list_started = True
-                    if list_started:
-                        all_flet_colors.append(value)
-
-                # checking if all the entered colors exist in flet
-                if self.icon_color not in all_flet_colors:
-                    raise ValueError("Entered color was not found! See the colors browser for help!")
-        except Exception as x:
-            print(f"Color Error: {x}")
-            e.page.show_snack_bar(ft.SnackBar(ft.Text(f"ERROR: {x}"), open=True))
-            return
-
-        # offset
-        try:
-            self.icon_offset = eval(self.icon_offset)
-            if not isinstance(self.icon_offset, ft.Offset) \
-                    and not isinstance(self.icon_offset, tuple) \
-                    and self.icon_offset is not None:
-                raise ValueError("Wrong Value!")
-            elif isinstance(self.icon_offset, tuple) and len(self.icon_offset) == 2:
-                self.icon_offset = eval(f"Offset({self.icon_offset[0]}, {self.icon_offset[1]})")
-        except Exception as x:
-            print(f"Offset Error: {x}")
-            e.page.show_snack_bar(
-                ft.SnackBar(
-                    ft.Text("ERROR: `offset` must be an Offset object or in the form x,y. Please check your input."),
-                    open=True))
-            return
-
-        # rotate - input is assumed to be in degrees (which is in turn converted to rads internally)
-        try:
-            self.icon_rotate = eval(self.icon_rotate)
-            deg_to_rads = lambda d: round((math.pi * float(d)) / 180, 3)
-            if not isinstance(self.icon_rotate, ft.Rotate) \
-                    and not isinstance(self.icon_rotate, (int, float)) \
-                    and self.icon_rotate is not None:
-                raise ValueError("Wrong Value!")
-            elif isinstance(self.icon_rotate, ft.Rotate):
-                self.icon_rotate.angle = deg_to_rads(self.icon_rotate.angle)
-            elif isinstance(self.icon_rotate, (int, float)):
-                self.icon_rotate = deg_to_rads(self.icon_rotate)
-            elif isinstance(self.icon_rotate, tuple) and len(self.icon_rotate) == 2:
-                self.icon_rotate = eval(f"Rotate({deg_to_rads(self.icon_rotate[0])}, {self.icon_rotate[1]})")
-        except Exception as x:
-            print(f"Rotate Error: {x}")
-            e.page.show_snack_bar(
-                ft.SnackBar(
-                    ft.Text(
-                        "ERROR: `rotate` must be an Rotate object or in the form angle,alignment. Please check your input."),
-                    open=True))
-            return
-
-        # scale
-        try:
-            self.icon_scale = eval(self.icon_scale)
-            if not isinstance(self.icon_scale, ft.Scale) \
-                    and not isinstance(self.icon_scale, (int, float)) \
-                    and self.icon_scale is not None:
-                raise ValueError("Wrong Value!")
-        except Exception as x:
-            print(f"Scale Error: {x}")
-            e.page.show_snack_bar(
-                ft.SnackBar(
-                    ft.Text(
-                        "ERROR: `scale` must be an Scale object. Please check your input."),
-                    open=True))
-            return
-        
-        # opacity
-        try:
-            if self.field_opacity.value:
-                self.icon_opacity = eval(self.field_opacity.value)
-                assert isinstance(self.icon_opacity, (int, float)), "`opacity` must be either of type float or int !"
-            else:
-                self.icon_opacity = None
-        except Exception as x:
-            print(f"Opacity Error: {x}")
-            e.page.show_snack_bar(ft.SnackBar(ft.Text(f"ERROR: {x}"), open=True))
-            return
-
-        self.icon_obj.current.color = self.icon_color
-        self.icon_obj.current.tooltip = self.icon_tooltip
-        self.icon_obj.current.name = self.icon_name
-        self.icon_obj.current.size = self.icon_size
-        self.icon_obj.current.opacity = self.icon_opacity
-        self.icon_obj.current.scale = self.icon_scale
-        self.icon_obj.current.rotate = self.icon_rotate
-        self.icon_obj.current.offset = self.icon_offset
-
+    def cargarDatos(self, vehiculo):
+        self.f_idvehiculo = vehiculo[0]
+        self.selected_Vehiculo_id = vehiculo[1]
+        self.selected_trabajador_id = vehiculo[2]
+        self.fila_editar = vehiculo[0]
+        # fecha_str = vehiculo[4].strftime("%d-%m-%Y")
+        self.field_colorvehiculo.value = vehiculo[4]
+        self.field_pesovehiculo.value = vehiculo[5]
+        self.field_numerop.value = vehiculo[6]
+        self.field_marca.value = vehiculo[7]
+        self.field_año.value = vehiculo[8]
+        self.field_revisiont.value = vehiculo[9]
+        self.field_descripcion.value = vehiculo[10]
+        self.boton_guardar.visible=False
+        self.boton_editar.visible=True
         self.update()
-        e.page.show_snack_bar(ft.SnackBar(ft.Text("Updated Icon!"), open=True))
 
-    def copy_to_clipboard(self, e: ft.ControlEvent):
-        """It copies the tooltip object/instance to the clipboard."""
-        o = f", opacity={self.icon_opacity}"
-        s = f", scale={self.icon_scale}"
-        r = f", rotate={self.icon_rotate}"
-        off = f", offset={self.icon_offset}"
-        t = f", tooltip='{self.icon_tooltip}'"
-        c = f", color='{self.icon_color}'"
+    def eliminarDatos(self, vehiculo):
+        # Encuentra la fila que contiene los datos del vehiculo
+        selected_row = next(row for row in self.mytabla.rows if row.cells[0].content.value == vehiculo[12])
+        # Elimina esta fila de la tabla
+        self.mytabla.rows.remove(selected_row)
+        # Actualiza la página para reflejar los cambios
+        VehiculoService.eliminar_registro_Vehiculo(conexion.conectar(), vehiculo[0])
+        conexion.cerrar_conexion(conexion.conectar())
+        self.update()
+    
+    def LimpiarDatos(self, e: ft.ControlEvent):
+        self.boton_guardar.visible=True
+        self.boton_editar.visible=False
+        self.field_tipovehiculo.value =""
+        self.field_vehiculo.value = ""
+        self.field_colorvehiculo.value = ""
+        self.field_pesovehiculo.value = ""
+        self.field_numerop.value = ""
+        self.field_marca.value = ""
+        self.field_año.value = ""
+        self.field_revisiont.value = ""
+        self.field_descripcion.value = ""
+        self.field_galones.value = ""
+        self.update()
+    
+    
+    def EditaryGuardar(self, e: ft.ControlEvent):
 
-        others = f"{c if self.icon_color is not None else ''}{t if self.icon_tooltip is not None else ''}{o if self.icon_opacity is not None else ''}{s if self.icon_scale is not None else ''}{off if self.icon_offset is not None else ''}{r if self.icon_rotate is not None else ''}"
-        val = f"Icon(name='{self.icon_name}', size={self.icon_size}{others if others else ''})"
-        e.page.set_clipboard(val)
-        e.page.show_snack_bar(ft.SnackBar(ft.Text(f"Copied: {val}"), open=True))
-        print(val)
+        """Editar"""
+        self.boton_guardar.visible=True
+        self.boton_editar.visible=False
 
+        if self.fila_editar is not None:
+            self.mytabla.rows[self.fila_editar-1].cells[0].content.value = self.field_tipovehiculo.value
+            self.mytabla.rows[self.fila_editar-1].cells[1].content.value = self.field_vehiculo.value
+            self.mytabla.rows[self.fila_editar-1].cells[2].content.value = self.field_colorvehiculo.value
+            self.mytabla.rows[self.fila_editar-1].cells[3].content.value = self.field_pesovehiculo.value
+            self.mytabla.rows[self.fila_editar-1].cells[4].content.value = self.field_numerop.value
+            self.mytabla.rows[self.fila_editar-1].cells[5].content.value = self.field_marca.value
+            self.mytabla.rows[self.fila_editar-1].cells[6].content.value = self.field_año.value
+            self.mytabla.rows[self.fila_editar-1].cells[7].content.value = self.field_revisiont.value
+            self.mytabla.rows[self.fila_editar-1].cells[8].content.value = self.field_descripcion.value
+            self.mytabla.rows[self.fila_editar-1].cells[9].content.value = self.field_galones.value
+            
+            #fecha = datetime.strptime(self.field_colorvehiculo.value, "%d-%m-%Y")
+            VehiculoService.actualizar_registro_Vehiculo(conexion.conectar(), 1, 
+                                                        self.selected_Vehiculo_id, 
+                                                        self.selected_trabajador_id,
+                                                        self.field_colorvehiculo.value, 
+                                                        self.field_pesovehiculo.value, 
+                                                        self.field_numerop.value, 
+                                                        self.field_marca.value, 
+                                                        self.field_año.value, 
+                                                        self.field_revisiont.value,
+                                                        self.field_descripcion.value,
+                                                        self.field_galones.value,
+                                                        self.f_idvehiculo)
+            conexion.cerrar_conexion(conexion.conectar())
+            self.mytabla.rows.clear()
+            faenas = VehiculoService.todos_Vehiculo(conexion.conectar())
+            for vehiculo in faenas:
+                def cargaEditar(vehiculo):
+                    return lambda e: self.cargarDatos(vehiculo)
+                def eliminar(vehiculo):
+                    return lambda e: self.eliminarDatos(vehiculo)
+                self.mytabla.rows.append(
+                    DataRow(
+                        cells=[
+                            DataCell(Text(vehiculo[2])),
+                            DataCell(Text(vehiculo[3])),
+                            DataCell(Text(vehiculo[4])),
+                            DataCell(Text(vehiculo[5])),
+                            DataCell(Text(vehiculo[6])),
+                            DataCell(Text(vehiculo[7])),
+                            DataCell(Text(vehiculo[8])),
+                            DataCell(Text(vehiculo[9])),
+                            DataCell(Text(vehiculo[10])),
+                            DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(vehiculo))),
+                            DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(vehiculo))),
+                        ]
+                    )
+                )
+                # self.update()
+            faenas = VehiculoService.todos_Vehiculo(conexion.conectar())
+            # Actualiza las demás celdas de la misma manera
+            self.fila_editar = None  # Restablece el índice de la fila que se está editando
+            self.update()
+        else:
+
+            """Guardar"""
+            #fecha = datetime.strptime(self.field_colorvehiculo.value, "%d-%m-%Y")
+            VehiculoService.crear_registro_Vehiculo(conexion.conectar(), 1, self.selected_Vehiculo_id, 
+                                                    self.selected_trabajador_id,
+                                                    self.field_colorvehiculo.value, 
+                                                    self.field_pesovehiculo.value, 
+                                                    self.field_numerop.value, 
+                                                    self.field_marca.value, 
+                                                    self.field_año.value, 
+                                                    self.field_revisiont.value,
+                                                    self.field_descripcion.value,
+                                                    self.field_galones.value)
+            conexion.cerrar_conexion(conexion.conectar())
+            self.mytabla.rows.clear()
+            faenas = VehiculoService.todos_Vehiculo(conexion.conectar())
+            for vehiculo in faenas:
+                def cargaEditar(vehiculo):
+                    return lambda e: self.cargarDatos(vehiculo)
+                def eliminar(vehiculo):
+                    return lambda e: self.eliminarDatos(vehiculo)
+                self.mytabla.rows.append(
+                    DataRow(
+                        cells=[
+                            DataCell(Text(vehiculo[12])),
+                            DataCell(Text(vehiculo[13])),
+                            DataCell(Text(vehiculo[4])),
+                            DataCell(Text(vehiculo[5])),
+                            DataCell(Text(vehiculo[6])),
+                            DataCell(Text(vehiculo[7])),
+                            DataCell(Text(vehiculo[8])),
+                            DataCell(Text(vehiculo[9])),
+                            DataCell(Text(vehiculo[10])),
+                            DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(vehiculo))),
+                            DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(vehiculo))),
+                        ]
+                    )
+                )
+                self.update()
+            # Si no se está editando ninguna fila, agrega una nueva fila
+            # self.mytabla.rows.append(
+            #     DataRow(
+            #         cells=[
+            #             DataCell(Text(self.field_tipovehiculo.value)),
+            #             DataCell(Text(self.field_vehiculo.value)),
+            #             DataCell(Text(self.field_colorvehiculo.value)),
+            #             DataCell(Text(self.field_pesovehiculo.value)),
+            #             DataCell(Text(self.field_numerop.value)),
+            #             DataCell(Text(self.field_marca.value)),
+            #             DataCell(Text(self.field_año.value)),
+            #             DataCell(Text(self.field_revisiont.value)),
+            #             DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE)),
+            #             DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED)),
+            #         ]
+                
+            #     )
+            # )
+            # self.update()
+    #Validaciones
+    def validar_nombre(self, e: ft.ControlEvent):
+            # Verifica si el valor ingresado por el usuario contiene solo letras.
+            if not e.control.value.isalpha():
+                e.control.error_text = "Por favor, ingrese solo letras."
+            else:
+                e.control.error_text = ""
+            self.update()
+    
+    def validar_numeros(self, e: ft.ControlEvent):
+        # Verifica si el valor ingresado por el usuario contiene solo números.
+        if not e.control.value.isdigit():
+            e.control.error_text = "Por favor, ingrese solo números."
+        else:
+            e.control.error_text = ""
+        self.update()
+
+    def validar_fecha(self, e: ft.ControlEvent):
+        # Verifica si el valor ingresado por el usuario es una fecha válida.
+        fecha_str = e.control.value.strip()
+        try:
+            # Intenta convertir la cadena de texto a una fecha.
+            datetime.strptime(fecha_str, "%d-%m-%Y")
+            e.control.error_text = ""
+        except ValueError:
+            # Si la conversión falla, muestra un mensaje de error.
+            e.control.error_text = "Por favor, ingrese una fecha válida en el formato DD-MM-YYYY."
+        self.update()
+
+
+    def on_item_selected_TipoVehiculo(self,e: ft.ControlEvent):
+        # Asigna el valor seleccionado al TextField
+        self.field_tipovehiculo.value = e.control.text
+        self.selected_Vehiculo_id = self.trabajador_id_map[e.control.text]
+        print(self.selected_Vehiculo_id)
+        self.update()
+
+    def on_item_selected_TipoCombustible(self,e: ft.ControlEvent):
+        # Asigna el valor seleccionado al TextField
+        self.field_vehiculo.value = e.control.text
+        self.selected_trabajador_id = self.tipoCombustible_id_map[e.control.text]
+        print(self.selected_trabajador_id)
+        self.update()
 
 if __name__ == "__main__":
     def main(page: ft.Page):
