@@ -214,18 +214,17 @@ class TabContentVistaTrabajadores(ft.UserControl):
         self.mytabla.rows.append(
             DataRow(
                 cells=[
-                    DataCell(Text(self.field_name.value.strip())),
-                    DataCell(Text(self.field_apellido.value.strip())),
-                    DataCell(Text(self.field_fechaNac.value.strip())),
-                    DataCell(Text(self.field_numeroCel.value.strip())),
-                    DataCell(Text(self.field_traba.value.strip())),
-                    DataCell(Text(self.field_numeroDNI.value.strip())),
-                    DataCell(Text(self.field_direccion.value.strip())),
-                    DataCell(Text(self.field_licencia.value.strip())),
+                    DataCell(Text(self.field_name.value)),
+                    DataCell(Text(self.field_apellido.value)),
+                    DataCell(Text(self.field_fechaNac.value)),
+                    DataCell(Text(self.field_numeroCel.value)),
+                    DataCell(Text(self.field_traba.value)),
+                    DataCell(Text(self.field_numeroDNI.value)),
+                    DataCell(Text(self.field_direccion.value)),
+                    DataCell(Text(self.field_licencia.value)),
                     DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE)),
                     DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED)),
                 ]
-            
             )
         )
         self.update()
