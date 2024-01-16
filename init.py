@@ -1,10 +1,10 @@
 #importaciones
 import flet as ft
 from random import choice
-from utils.vistaMaquinaria import TabContentVistaMaquinaria
-from utils.vistaTrabajadores import TabContentVistaTrabajadores
-from utils.vistaFaenas import TabContentVistaFaenas
-from utils.vistaHome import TabcontentVistaHome
+from View.vistaMaquinaria import TabContentVistaMaquinaria
+from View.vistaTrabajadores import TabContentVistaTrabajadores
+from View.vistaFaenas import TabContentVistaFaenas
+from View.vistaHome import TabcontentVistaHome
 
 def main(page: ft.Page):
     page.title = "SISTEMA DE CONTROL Y SEGUIMIENTO DE MAQUINAS VEHICULOS Y EQUIPOS(SCS)"
