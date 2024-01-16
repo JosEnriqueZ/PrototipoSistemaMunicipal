@@ -186,28 +186,28 @@ class TabContentVistaMaquinaria(ft.UserControl):
             spacing=11
         )
         self.mytabla.rows.clear()
-        trabajadores = VehiculoService.todos_Vehiculo(conexion.conectar())
+        vehiculos = VehiculoService.todos_Vehiculo(conexion.conectar())
         
-        for trabajador in trabajadores:
-            def cargaEditar(trabajador):
-                return lambda e: self.cargarDatos(trabajador)
-            def eliminar(trabajador):
-                return lambda e: self.eliminarDatos(trabajador)
+        for vehiculo in vehiculos:
+            def cargaEditar(vehiculo):
+                return lambda e: self.cargarDatos(vehiculo)
+            def eliminar(vehiculo):
+                return lambda e: self.eliminarDatos(vehiculo)
             self.mytabla.rows.append(
                 DataRow(
                     cells=[
-                        DataCell(Text(trabajador[12])),
-                        DataCell(Text(trabajador[13])),
-                        DataCell(Text(trabajador[4])),
-                        DataCell(Text(trabajador[5])),
-                        DataCell(Text(trabajador[6])),
-                        DataCell(Text(trabajador[7])),
-                        DataCell(Text(trabajador[8])),
-                        DataCell(Text(trabajador[9])),
-                        DataCell(Text(trabajador[10])),
-                        DataCell(Text(trabajador[11])),
-                        DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(trabajador))),
-                        DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(trabajador))),
+                        DataCell(Text(vehiculo[12])),
+                        DataCell(Text(vehiculo[13])),
+                        DataCell(Text(vehiculo[4])),
+                        DataCell(Text(vehiculo[5])),
+                        DataCell(Text(vehiculo[6])),
+                        DataCell(Text(vehiculo[7])),
+                        DataCell(Text(vehiculo[8])),
+                        DataCell(Text(vehiculo[9])),
+                        DataCell(Text(vehiculo[10])),
+                        DataCell(Text(vehiculo[11])),
+                        DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(vehiculo))),
+                        DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(vehiculo))),
                     ]
                 )
             )
@@ -236,32 +236,34 @@ class TabContentVistaMaquinaria(ft.UserControl):
             spacing=20
         )
 
-    def cargarDatos(self, trabajador):
-        self.f_idvehiculo = trabajador[0]
-        self.selected_tipoVehiculo_id = trabajador[1]
-        self.selected_tipoCombustible_id = trabajador[2]
-        self.fila_editar = trabajador[0]
-        self.field_tipovehiculo.value = trabajador[12]
-        self.field_tipocombustible.value = trabajador[13]
-        # fecha_str = trabajador[4].strftime("%d-%m-%Y")
-        self.field_colorvehiculo.value = trabajador[4]
-        self.field_pesovehiculo.value = trabajador[5]
-        self.field_numerop.value = trabajador[6]
-        self.field_marca.value = trabajador[7]
-        self.field_año.value = trabajador[8]
-        self.field_revisiont.value = trabajador[9]
-        self.field_descripcion.value = trabajador[10]
-        self.field_galones.value = trabajador[11]
+    def cargarDatos(self, vehiculo):
+        self.f_idvehiculo = vehiculo[0]
+        self.selected_tipoVehiculo_id = vehiculo[1]
+        self.selected_tipoCombustible_id = vehiculo[2]
+        self.fila_editar = vehiculo[0]
+        self.field_tipovehiculo.value = vehiculo[12]
+        self.field_tipocombustible.value = vehiculo[13]
+        # fecha_str = vehiculo[4].strftime("%d-%m-%Y")
+        self.field_colorvehiculo.value = vehiculo[4]
+        self.field_pesovehiculo.value = vehiculo[5]
+        self.field_numerop.value = vehiculo[6]
+        self.field_marca.value = vehiculo[7]
+        self.field_año.value = vehiculo[8]
+        self.field_revisiont.value = vehiculo[9]
+        self.field_descripcion.value = vehiculo[10]
+        self.field_galones.value = vehiculo[11]
         self.boton_guardar.visible=False
         self.boton_editar.visible=True
         self.update()
 
-    def eliminarDatos(self, trabajador):
-        # Encuentra la fila que contiene los datos del trabajador
-        selected_row = next(row for row in self.mytabla.rows if row.cells[0].content.value == trabajador[2])
+    def eliminarDatos(self, vehiculo):
+        # Encuentra la fila que contiene los datos del vehiculo
+        selected_row = next(row for row in self.mytabla.rows if row.cells[0].content.value == vehiculo[12])
         # Elimina esta fila de la tabla
         self.mytabla.rows.remove(selected_row)
         # Actualiza la página para reflejar los cambios
+        VehiculoService.eliminar_registro_Vehiculo(conexion.conectar(), vehiculo[0])
+        conexion.cerrar_conexion(conexion.conectar())
         self.update()
     
     def LimpiarDatos(self, e: ft.ControlEvent):
@@ -313,32 +315,32 @@ class TabContentVistaMaquinaria(ft.UserControl):
                                                         self.f_idvehiculo)
             conexion.cerrar_conexion(conexion.conectar())
             self.mytabla.rows.clear()
-            trabajadores = VehiculoService.todos_Vehiculo(conexion.conectar())
-            for trabajador in trabajadores:
-                def cargaEditar(trabajador):
-                    return lambda e: self.cargarDatos(trabajador)
-                def eliminar(trabajador):
-                    return lambda e: self.eliminarDatos(trabajador)
+            vehiculos = VehiculoService.todos_Vehiculo(conexion.conectar())
+            for vehiculo in vehiculos:
+                def cargaEditar(vehiculo):
+                    return lambda e: self.cargarDatos(vehiculo)
+                def eliminar(vehiculo):
+                    return lambda e: self.eliminarDatos(vehiculo)
                 self.mytabla.rows.append(
                     DataRow(
                         cells=[
-                            DataCell(Text(trabajador[12])),
-                            DataCell(Text(trabajador[13])),
-                            DataCell(Text(trabajador[4])),
-                            DataCell(Text(trabajador[5])),
-                            DataCell(Text(trabajador[6])),
-                            DataCell(Text(trabajador[7])),
-                            DataCell(Text(trabajador[8])),
-                            DataCell(Text(trabajador[9])),
-                            DataCell(Text(trabajador[10])),
-                            DataCell(Text(trabajador[11])),
-                            DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(trabajador))),
-                            DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(trabajador))),
+                            DataCell(Text(vehiculo[12])),
+                            DataCell(Text(vehiculo[13])),
+                            DataCell(Text(vehiculo[4])),
+                            DataCell(Text(vehiculo[5])),
+                            DataCell(Text(vehiculo[6])),
+                            DataCell(Text(vehiculo[7])),
+                            DataCell(Text(vehiculo[8])),
+                            DataCell(Text(vehiculo[9])),
+                            DataCell(Text(vehiculo[10])),
+                            DataCell(Text(vehiculo[11])),
+                            DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(vehiculo))),
+                            DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(vehiculo))),
                         ]
                     )
                 )
                 # self.update()
-            trabajadores = VehiculoService.todos_Vehiculo(conexion.conectar())
+            vehiculos = VehiculoService.todos_Vehiculo(conexion.conectar())
             # Actualiza las demás celdas de la misma manera
             self.fila_editar = None  # Restablece el índice de la fila que se está editando
             self.update()
@@ -358,50 +360,50 @@ class TabContentVistaMaquinaria(ft.UserControl):
                                                     self.field_galones.value)
             conexion.cerrar_conexion(conexion.conectar())
             self.mytabla.rows.clear()
-            trabajadores = VehiculoService.todos_Vehiculo(conexion.conectar())
-            for trabajador in trabajadores:
-                def cargaEditar(trabajador):
-                    return lambda e: self.cargarDatos(trabajador)
-                def eliminar(trabajador):
-                    return lambda e: self.eliminarDatos(trabajador)
+            vehiculos = VehiculoService.todos_Vehiculo(conexion.conectar())
+            for vehiculo in vehiculos:
+                def cargaEditar(vehiculo):
+                    return lambda e: self.cargarDatos(vehiculo)
+                def eliminar(vehiculo):
+                    return lambda e: self.eliminarDatos(vehiculo)
                 self.mytabla.rows.append(
                     DataRow(
                         cells=[
-                            DataCell(Text(trabajador[12])),
-                            DataCell(Text(trabajador[13])),
-                            DataCell(Text(trabajador[4])),
-                            DataCell(Text(trabajador[5])),
-                            DataCell(Text(trabajador[6])),
-                            DataCell(Text(trabajador[7])),
-                            DataCell(Text(trabajador[8])),
-                            DataCell(Text(trabajador[9])),
-                            DataCell(Text(trabajador[10])),
-                            DataCell(Text(trabajador[11])),
-                            DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(trabajador))),
-                            DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(trabajador))),
+                            DataCell(Text(vehiculo[12])),
+                            DataCell(Text(vehiculo[13])),
+                            DataCell(Text(vehiculo[4])),
+                            DataCell(Text(vehiculo[5])),
+                            DataCell(Text(vehiculo[6])),
+                            DataCell(Text(vehiculo[7])),
+                            DataCell(Text(vehiculo[8])),
+                            DataCell(Text(vehiculo[9])),
+                            DataCell(Text(vehiculo[10])),
+                            DataCell(Text(vehiculo[11])),
+                            DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(vehiculo))),
+                            DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(vehiculo))),
                         ]
                     )
                 )
-                # self.update()
+                self.update()
             # Si no se está editando ninguna fila, agrega una nueva fila
-            self.mytabla.rows.append(
-                DataRow(
-                    cells=[
-                        DataCell(Text(self.field_tipovehiculo.value)),
-                        DataCell(Text(self.field_tipocombustible.value)),
-                        DataCell(Text(self.field_colorvehiculo.value)),
-                        DataCell(Text(self.field_pesovehiculo.value)),
-                        DataCell(Text(self.field_numerop.value)),
-                        DataCell(Text(self.field_marca.value)),
-                        DataCell(Text(self.field_año.value)),
-                        DataCell(Text(self.field_revisiont.value)),
-                        DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE)),
-                        DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED)),
-                    ]
+            # self.mytabla.rows.append(
+            #     DataRow(
+            #         cells=[
+            #             DataCell(Text(self.field_tipovehiculo.value)),
+            #             DataCell(Text(self.field_tipocombustible.value)),
+            #             DataCell(Text(self.field_colorvehiculo.value)),
+            #             DataCell(Text(self.field_pesovehiculo.value)),
+            #             DataCell(Text(self.field_numerop.value)),
+            #             DataCell(Text(self.field_marca.value)),
+            #             DataCell(Text(self.field_año.value)),
+            #             DataCell(Text(self.field_revisiont.value)),
+            #             DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE)),
+            #             DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED)),
+            #         ]
                 
-                )
-            )
-            self.update()
+            #     )
+            # )
+            # self.update()
     #Validaciones
     def validar_nombre(self, e: ft.ControlEvent):
             # Verifica si el valor ingresado por el usuario contiene solo letras.

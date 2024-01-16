@@ -4,7 +4,7 @@ def todos_Vehiculo(cnxn):
     SELECT Vehiculo.*, TipoVehiculo.tvNombre,TipoCombustible.tcNombre
         FROM Vehiculo 
         JOIN TipoVehiculo ON Vehiculo.tipoVehiculoFK = TipoVehiculo.idTipoVehiculo
-        JOIN TipoCombustible ON Vehiculo.tipoCombustibleFK= TipoCombustible.idTipoCombustible"""
+        JOIN TipoCombustible ON Vehiculo.tipoCombustibleFK= TipoCombustible.idTipoCombustible where VehActivo = 1"""
     cursor.execute(select_query)
     rows = cursor.fetchall()
     #print(rows)
