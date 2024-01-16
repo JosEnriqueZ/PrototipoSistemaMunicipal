@@ -8,7 +8,7 @@ def todos_trabajadores(cnxn):
 
 def crear_registro_trabajador(cnxn, trabActivo, trabNombre, trabApellido, trabFechaNac, trabCel, trabTrabador, trabDNI, trabDireccion, trabLicenciaConducir):
     cursor = cnxn.cursor()
-    insert_query = "INSERT INTO Trabajador (trabActivo,trabNombre, trabApellido, trabFechaNac,trabCel, trabTrabador, trabDNI, trabDireccion, trabLicenciaConducir) VALUES (?, ?, ?, ? , ?, ?, ?, ?, ?)"
+    insert_query = "INSERT INTO Trabajador (trabActivo, trabNombre, trabApellido, trabFechaNac,trabCel, trabTrabador, trabDNI, trabDireccion, trabLicenciaConducir) VALUES (?, ?, ?, ? , ?, ?, ?, ?, ?)"
     data = (trabActivo, trabNombre, trabApellido, trabFechaNac, trabCel, trabTrabador, trabDNI, trabDireccion, trabLicenciaConducir)
     cursor.execute(insert_query, data)
     cnxn.commit()
@@ -23,8 +23,9 @@ def leer_registro_Trabajador(cnxn, idTrabajador):
 
 def actualizar_registro_Trabajador(cnxn, trabActivo, trabNombre, trabApellido, trabFechaNac, trabCel, trabTrabador, trabDNI, trabDireccion, trabLicenciaConducir, idTrabajador):
     cursor = cnxn.cursor()
-    update_query = "UPDATE Trabajador SET trabActivo = ? trabNombre = ? trabApellido = ? trabFechaNac = ? trabCel = ? trabTrabador = ? trabDNI = ? trabDireccion = ? trabLicenciaConducir = ? WHERE idTrabajador = ?"
+    update_query = "UPDATE Trabajador SET trabActivo = ? ,trabNombre = ? ,trabApellido = ? ,trabFechaNac = ? ,trabCel = ? ,trabTrabador = ? ,trabDNI = ? ,trabDireccion = ? ,trabLicenciaConducir = ? WHERE idTrabajador = ?"
     data = ( trabActivo, trabNombre, trabApellido, trabFechaNac, trabCel, trabTrabador, trabDNI, trabDireccion, trabLicenciaConducir, idTrabajador)
+    
     cursor.execute(update_query, data)
     cnxn.commit()
 
