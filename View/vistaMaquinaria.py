@@ -302,7 +302,7 @@ class TabContentVistaMaquinaria(ft.UserControl):
             VehiculoService.actualizar_registro_Vehiculo(conexion.conectar(), 1, 
                                                         self.selected_tipoVehiculo_id, 
                                                         self.selected_tipoCombustible_id,
-                                                        self.field_colorvehiculo, 
+                                                        self.field_colorvehiculo.value, 
                                                         self.field_pesovehiculo.value, 
                                                         self.field_numerop.value, 
                                                         self.field_marca.value, 
