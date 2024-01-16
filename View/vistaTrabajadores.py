@@ -266,7 +266,7 @@ class TabContentVistaTrabajadores(ft.UserControl):
                         cells=[
                             DataCell(Text(trabajador[2])),
                             DataCell(Text(trabajador[3])),
-                            DataCell(Text(self.field_fechaNac.value)),
+                            DataCell(Text(trabajador[4])),
                             DataCell(Text(trabajador[5])),
                             DataCell(Text(trabajador[6])),
                             DataCell(Text(trabajador[7])),
