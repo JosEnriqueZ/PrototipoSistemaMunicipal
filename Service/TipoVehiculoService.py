@@ -5,11 +5,13 @@ def todos_TipoVehiculo(cnxn):
     rows = cursor.fetchall()
     print(rows)
     return rows
-def todos_TipoVehiculo_Nombre(cnxn):
+
+def TipoVehiculo_Nombre(cnxn, tvNombre):
     cursor = cnxn.cursor()
-    select_query = "SELECT tvNombre FROM TipoVehiculo"
-    cursor.execute(select_query)
-    rows = cursor.fetchall()
+    select_query = "SELECT * FROM TipoVehiculo where tvNombre = ?"
+    data = (tvNombre,)
+    cursor.execute(select_query,data)
+    rows = cursor.fetchone()
     print(rows)
     return rows
 

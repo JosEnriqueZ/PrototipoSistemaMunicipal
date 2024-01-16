@@ -14,7 +14,7 @@ class TabContentVistaMaquinaria(ft.UserControl):
         super().__init__()
         self.fila_editar = None
         #text field Vehiculo
-        self.field_name = ft.TextField(
+        self.field_tipovehiculo = ft.TextField(
             label="Tipo Vehiculo",
             value="",
             on_change=self.validar_nombre,
@@ -22,10 +22,10 @@ class TabContentVistaMaquinaria(ft.UserControl):
         )
         data = TipoVehiculoService.todos_TipoVehiculo(conexion.conectar())
         self.items_TipoVehiculo = ft.PopupMenuButton(
-            items=[ft.PopupMenuItem(text=d[2], checked=False, on_click=self.on_item_selected) for d in data])
+            items=[ft.PopupMenuItem(text=d[2], checked=False, on_click=self.on_item_selected_TipoVehiculo) for d in data])
         
         # text field COmbustible
-        self.field_apellido = ft.TextField(
+        self.field_tipocombustible = ft.TextField(
             label="Tipo Combustible",
             value="",
             on_change=self.validar_nombre,
@@ -35,12 +35,12 @@ class TabContentVistaMaquinaria(ft.UserControl):
         )
         self.item_combustible = ft.PopupMenuButton(
             items=[ft.PopupMenuItem(
-            text="Petroleo", checked=False),
+            text="Petroleo", checked=False,on_click=self.on_item_selected_TipoCombustible),
             ft.PopupMenuItem(
-            text="Gasolina", checked=False)])
+            text="Gasolina", checked=False,on_click=self.on_item_selected_TipoCombustible)])
 
         # text Color del Vehiculo
-        self.field_fechaNac = ft.TextField(
+        self.field_colorvehiculo = ft.TextField(
             label="Color del Vehiculo",
             value="",
             keyboard_type=ft.KeyboardType.TEXT,
@@ -48,7 +48,7 @@ class TabContentVistaMaquinaria(ft.UserControl):
         )
 
         # text field Peso del Vehiculo
-        self.field_numeroCel = ft.TextField(
+        self.field_pesovehiculo = ft.TextField(
             label="Peso del Vehiculo",
             hint_text="Ingrese Peso del Vehiculo",
             value="",
@@ -58,7 +58,7 @@ class TabContentVistaMaquinaria(ft.UserControl):
         )
 
         # text field Numero de Placa
-        self.field_traba = ft.TextField(
+        self.field_numerop = ft.TextField(
             label="Numero de Placa",
             hint_text="Ingrese Numero de Placa",
             value="",
@@ -67,7 +67,7 @@ class TabContentVistaMaquinaria(ft.UserControl):
         )
 
         # text field Marca
-        self.field_numeroDNI = ft.TextField(
+        self.field_marca = ft.TextField(
             label="Marca",
             hint_text="Ingrese la Marca",
             value="",
@@ -76,7 +76,7 @@ class TabContentVistaMaquinaria(ft.UserControl):
         )
 
         # text field Fabricacion
-        self.field_direccion = ft.TextField(
+        self.field_año = ft.TextField(
             label="Año de Fabricacion",
             hint_text="Ingrese el Año de Fabricacion",
             value="",
@@ -85,7 +85,7 @@ class TabContentVistaMaquinaria(ft.UserControl):
         )
 
         # text field Revision Tecnica
-        self.field_licencia = ft.TextField(
+        self.field_revisiont = ft.TextField(
             label="Revision Tecnica",
             hint_text="Revision Tecnica",
             value="",
@@ -93,7 +93,7 @@ class TabContentVistaMaquinaria(ft.UserControl):
 
         )
         # text field Descripcion
-        self.field_licencia = ft.TextField(
+        self.field_descripcion = ft.TextField(
             label="Descripcion",
             hint_text="Ingrese su categoria de licencia de conducir",
             value="",
@@ -101,7 +101,7 @@ class TabContentVistaMaquinaria(ft.UserControl):
 
         )
         # text field Galones x hora Combustible
-        self.field_licencia = ft.TextField(
+        self.field_galones = ft.TextField(
             label="Galones x hora Combustible",
             hint_text="Galones x hora Combustible",
             value="",
@@ -112,22 +112,23 @@ class TabContentVistaMaquinaria(ft.UserControl):
         self.mytabla = ft.DataTable(
             border=ft.border.all(2, "black"),
             border_radius=10,
-            width=1180,
             vertical_lines=ft.border.BorderSide(3, "black"),
             horizontal_lines=ft.border.BorderSide(1, "black"),
             column_spacing=50,
             bgcolor="white",
             columns=[
-                ft.DataColumn(ft.Text("Nombre")),
-                ft.DataColumn(ft.Text("Apellido")),
-                ft.DataColumn(ft.Text("Fecha Nacimiento")),
-                ft.DataColumn(ft.Text("Numero Celular")),
-                ft.DataColumn(ft.Text("Rol Trabajador")),
-                ft.DataColumn(ft.Text("Numero DNI")),
-                ft.DataColumn(ft.Text("Direccion")),
-                ft.DataColumn(ft.Text("Licencia Conducir")),
+                ft.DataColumn(ft.Text("T Vehiculo")),
+                ft.DataColumn(ft.Text("Ti Combustible")),
+                ft.DataColumn(ft.Text("Color")),
+                ft.DataColumn(ft.Text("Peso")),
+                ft.DataColumn(ft.Text("Placa")),
+                ft.DataColumn(ft.Text("Marca")),
+                ft.DataColumn(ft.Text("Año")),
+                ft.DataColumn(ft.Text("Revision Tecnica")),
+                ft.DataColumn(ft.Text("Descripcion")),
+                ft.DataColumn(ft.Text("GalxHora")),
                 ft.DataColumn(ft.Text("Editar")),
-                ft.DataColumn(ft.Text("ELiminar")),
+                ft.DataColumn(ft.Text("Eliminar")),
             ],
             rows=[],
         )
@@ -135,13 +136,13 @@ class TabContentVistaMaquinaria(ft.UserControl):
         self.boton_guardar= ft.FilledButton(
                             "Guardar",
                             icon=ft.icons.SAVE,
-                            on_click=self.CapturaDatos
+                            on_click=self.EditaryGuardar
                         )
         self.boton_editar=ft.FilledButton(
                             "Editar",
                             visible=False,
                             icon=ft.icons.SAVE,
-                            on_click=self.CapturaDatos
+                            on_click=self.EditaryGuardar
                         )
         self.boton_limpiar=ft.FilledButton(
                             "Limpiar",
@@ -153,16 +154,19 @@ class TabContentVistaMaquinaria(ft.UserControl):
         all_fields = ft.Column(
             controls=[
                 ft.Row(
-                    [self.field_name,self.items_TipoVehiculo,self.field_apellido,self.item_combustible],
+                    [self.field_tipovehiculo,self.items_TipoVehiculo,self.field_tipocombustible,self.item_combustible],
                 ),
                 ft.Row(
-                    [self.field_fechaNac,self.field_numeroCel],
+                    [self.field_colorvehiculo,self.field_pesovehiculo],
                 ),
                 ft.Row(
-                    [self.field_traba, self.field_numeroDNI],
+                    [self.field_numerop, self.field_marca],
                 ),
                 ft.Row(
-                    [self.field_direccion, self.field_licencia],
+                    [self.field_año, self.field_revisiont],
+                ),
+                ft.Row(
+                    [self.field_descripcion, self.field_galones],
                 ),
                 
             ],
@@ -187,6 +191,8 @@ class TabContentVistaMaquinaria(ft.UserControl):
                         DataCell(Text(trabajador[7])),
                         DataCell(Text(trabajador[8])),
                         DataCell(Text(trabajador[9])),
+                        DataCell(Text(trabajador[10])),
+                        DataCell(Text(trabajador[11])),
                         DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(trabajador))),
                         DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(trabajador))),
                     ]
@@ -219,15 +225,17 @@ class TabContentVistaMaquinaria(ft.UserControl):
 
     def cargarDatos(self, trabajador):
         self.fila_editar = trabajador[0]
-        self.field_name.value = trabajador[2]
-        self.field_apellido.value = trabajador[3]
-        fecha_str = trabajador[4].strftime("%d-%m-%Y")
-        self.field_fechaNac.value = fecha_str
-        self.field_numeroCel.value = trabajador[5]
-        self.field_traba.value = trabajador[6]
-        self.field_numeroDNI.value = trabajador[7]
-        self.field_direccion.value = trabajador[8]
-        self.field_licencia.value = trabajador[9]
+        self.field_tipovehiculo.value = trabajador[2]
+        self.field_tipocombustible.value = trabajador[3]
+        # fecha_str = trabajador[4].strftime("%d-%m-%Y")
+        self.field_colorvehiculo.value = trabajador[4]
+        self.field_pesovehiculo.value = trabajador[5]
+        self.field_numerop.value = trabajador[6]
+        self.field_marca.value = trabajador[7]
+        self.field_año.value = trabajador[8]
+        self.field_revisiont.value = trabajador[9]
+        self.field_descripcion.value = trabajador[10]
+        self.field_galones.value = trabajador[11]
         self.boton_guardar.visible=False
         self.boton_editar.visible=True
         self.update()
@@ -243,34 +251,56 @@ class TabContentVistaMaquinaria(ft.UserControl):
     def LimpiarDatos(self, e: ft.ControlEvent):
         self.boton_guardar.visible=True
         self.boton_editar.visible=False
-        self.field_name.value =""
-        self.field_apellido.value = ""
-        self.field_fechaNac.value = ""
-        self.field_numeroCel.value = ""
-        self.field_traba.value = ""
-        self.field_numeroDNI.value = ""
-        self.field_direccion.value = ""
-        self.field_licencia.value = ""
+        self.field_tipovehiculo.value =""
+        self.field_tipocombustible.value = ""
+        self.field_colorvehiculo.value = ""
+        self.field_pesovehiculo.value = ""
+        self.field_numerop.value = ""
+        self.field_marca.value = ""
+        self.field_año.value = ""
+        self.field_revisiont.value = ""
+        self.field_descripcion.value = ""
+        self.field_galones.value = ""
         self.update()
     
     
-    def CapturaDatos(self, e: ft.ControlEvent):
+    def EditaryGuardar(self, e: ft.ControlEvent):
+
+        """Editar"""
         self.boton_guardar.visible=True
         self.boton_editar.visible=False
 
         if self.fila_editar is not None:
-            self.mytabla.rows[self.fila_editar-1].cells[0].content.value = self.field_name.value
-            self.mytabla.rows[self.fila_editar-1].cells[1].content.value = self.field_apellido.value
-            self.mytabla.rows[self.fila_editar-1].cells[2].content.value = self.field_fechaNac.value
-            self.mytabla.rows[self.fila_editar-1].cells[3].content.value = self.field_numeroCel.value
-            self.mytabla.rows[self.fila_editar-1].cells[4].content.value = self.field_traba.value
-            self.mytabla.rows[self.fila_editar-1].cells[5].content.value = self.field_numeroDNI.value
-            self.mytabla.rows[self.fila_editar-1].cells[6].content.value = self.field_direccion.value
-            self.mytabla.rows[self.fila_editar-1].cells[7].content.value = self.field_licencia.value
+            self.mytabla.rows[self.fila_editar-1].cells[0].content.value = self.field_tipovehiculo.value
+            self.mytabla.rows[self.fila_editar-1].cells[1].content.value = self.field_tipocombustible.value
+            self.mytabla.rows[self.fila_editar-1].cells[2].content.value = self.field_colorvehiculo.value
+            self.mytabla.rows[self.fila_editar-1].cells[3].content.value = self.field_pesovehiculo.value
+            self.mytabla.rows[self.fila_editar-1].cells[4].content.value = self.field_numerop.value
+            self.mytabla.rows[self.fila_editar-1].cells[5].content.value = self.field_marca.value
+            self.mytabla.rows[self.fila_editar-1].cells[6].content.value = self.field_año.value
+            self.mytabla.rows[self.fila_editar-1].cells[7].content.value = self.field_revisiont.value
+            self.mytabla.rows[self.fila_editar-1].cells[8].content.value = self.field_descripcion.value
+            self.mytabla.rows[self.fila_editar-1].cells[9].content.value = self.field_galones.value
 
-            fecha = datetime.strptime(self.field_fechaNac.value, "%d-%m-%Y")
-            VehiculoService.actualizar_registro_Vehiculo(conexion.conectar(), 1, self.field_name.value, self.field_apellido.value, fecha, self.field_numeroCel.value, self.field_traba.value, self.field_numeroDNI.value, self.field_direccion.value, self.field_licencia.value,(self.fila_editar))
-            conexion.cerrar_conexion(conexion.conectar())
+            Vehiculo=TipoVehiculoService.TipoVehiculo_Nombre(conexion.conectar(), self.field_tipovehiculo.value)
+            print(Vehiculo)
+            self.TipoCombustible= ""
+            if self.field_tipocombustible.value == "Petroleo":
+                self.TipoCombustible=1
+            else:
+                self.TipoCombustible=2
+            #fecha = datetime.strptime(self.field_colorvehiculo.value, "%d-%m-%Y")
+            # VehiculoService.actualizar_registro_Vehiculo(conexion.conectar(), 1, "Vehiculo[0]",
+            #                                               self.TipoCombustible, 
+            #                                               self.field_colorvehiculo, 
+            #                                               self.field_pesovehiculo.value, 
+            #                                               self.field_numerop.value, 
+            #                                               self.field_marca.value, 
+            #                                               self.field_año.value, 
+            #                                               self.field_revisiont.value,
+            #                                               self.field_descripcion.value,
+            #                                               self.field_galones.value)
+            # conexion.cerrar_conexion(conexion.conectar())
             self.mytabla.rows.clear()
             trabajadores = VehiculoService.todos_Vehiculo(conexion.conectar())
             for trabajador in trabajadores:
@@ -283,12 +313,14 @@ class TabContentVistaMaquinaria(ft.UserControl):
                         cells=[
                             DataCell(Text(trabajador[2])),
                             DataCell(Text(trabajador[3])),
-                            DataCell(Text(self.field_fechaNac.value)),
+                            DataCell(Text(trabajador[4])),
                             DataCell(Text(trabajador[5])),
                             DataCell(Text(trabajador[6])),
                             DataCell(Text(trabajador[7])),
                             DataCell(Text(trabajador[8])),
                             DataCell(Text(trabajador[9])),
+                            DataCell(Text(trabajador[10])),
+                            DataCell(Text(trabajador[11])),
                             DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(trabajador))),
                             DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(trabajador))),
                         ]
@@ -298,9 +330,21 @@ class TabContentVistaMaquinaria(ft.UserControl):
             trabajadores = VehiculoService.todos_Vehiculo(conexion.conectar())
             # Actualiza las demás celdas de la misma manera
             self.fila_editar = None  # Restablece el índice de la fila que se está editando
+            self.update()
         else:
-            fecha = datetime.strptime(self.field_fechaNac.value, "%d-%m-%Y")
-            VehiculoService.crear_registro_Vehiculo(conexion.conectar(), 1, self.field_name.value, self.field_apellido.value, fecha, self.field_numeroCel.value, self.field_traba.value, self.field_numeroDNI.value, self.field_direccion.value, self.field_licencia.value)
+
+            """Guardar"""
+            #fecha = datetime.strptime(self.field_colorvehiculo.value, "%d-%m-%Y")
+            VehiculoService.crear_registro_Vehiculo(conexion.conectar(), 1, self.field_tipovehiculo.value, 
+                                                    self.field_tipocombustible.value, 
+                                                    self.field_colorvehiculo.value, 
+                                                    self.field_pesovehiculo.value, 
+                                                    self.field_numerop.value, 
+                                                    self.field_marca.value, 
+                                                    self.field_año.value, 
+                                                    self.field_revisiont.value,
+                                                    self.field_descripcion.value,
+                                                    self.field_galones.value)
             conexion.cerrar_conexion(conexion.conectar())
             self.mytabla.rows.clear()
             trabajadores = VehiculoService.todos_Vehiculo(conexion.conectar())
@@ -314,12 +358,14 @@ class TabContentVistaMaquinaria(ft.UserControl):
                         cells=[
                             DataCell(Text(trabajador[2])),
                             DataCell(Text(trabajador[3])),
-                            DataCell(Text(self.field_fechaNac.value)),
+                            DataCell(Text(trabajador[4])),
                             DataCell(Text(trabajador[5])),
                             DataCell(Text(trabajador[6])),
                             DataCell(Text(trabajador[7])),
                             DataCell(Text(trabajador[8])),
                             DataCell(Text(trabajador[9])),
+                            DataCell(Text(trabajador[10])),
+                            DataCell(Text(trabajador[11])),
                             DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(trabajador))),
                             DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(trabajador))),
                         ]
@@ -330,14 +376,14 @@ class TabContentVistaMaquinaria(ft.UserControl):
             self.mytabla.rows.append(
                 DataRow(
                     cells=[
-                        DataCell(Text(self.field_name.value)),
-                        DataCell(Text(self.field_apellido.value)),
-                        DataCell(Text(self.field_fechaNac.value)),
-                        DataCell(Text(self.field_numeroCel.value)),
-                        DataCell(Text(self.field_traba.value)),
-                        DataCell(Text(self.field_numeroDNI.value)),
-                        DataCell(Text(self.field_direccion.value)),
-                        DataCell(Text(self.field_licencia.value)),
+                        DataCell(Text(self.field_tipovehiculo.value)),
+                        DataCell(Text(self.field_tipocombustible.value)),
+                        DataCell(Text(self.field_colorvehiculo.value)),
+                        DataCell(Text(self.field_pesovehiculo.value)),
+                        DataCell(Text(self.field_numerop.value)),
+                        DataCell(Text(self.field_marca.value)),
+                        DataCell(Text(self.field_año.value)),
+                        DataCell(Text(self.field_revisiont.value)),
                         DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE)),
                         DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED)),
                     ]
@@ -362,26 +408,29 @@ class TabContentVistaMaquinaria(ft.UserControl):
             e.control.error_text = ""
         self.update()
 
-    def validar_fecha(self, e: ft.ControlEvent):
-        # Verifica si el valor ingresado por el usuario es una fecha válida.
-        fecha_str = e.control.value.strip()
-        try:
-            # Intenta convertir la cadena de texto a una fecha.
-            datetime.strptime(fecha_str, "%d-%m-%Y")
-            e.control.error_text = ""
-        except ValueError:
-            # Si la conversión falla, muestra un mensaje de error.
-            e.control.error_text = "Por favor, ingrese una fecha válida en el formato DD-MM-YYYY."
-        self.update()
+    # def validar_fecha(self, e: ft.ControlEvent):
+    #     # Verifica si el valor ingresado por el usuario es una fecha válida.
+    #     fecha_str = e.control.value.strip()
+    #     try:
+    #         # Intenta convertir la cadena de texto a una fecha.
+    #         datetime.strptime(fecha_str, "%d-%m-%Y")
+    #         e.control.error_text = ""
+    #     except ValueError:
+    #         # Si la conversión falla, muestra un mensaje de error.
+    #         e.control.error_text = "Por favor, ingrese una fecha válida en el formato DD-MM-YYYY."
+    #     self.update()
 
 
-    def on_item_selected(self, e: ft.ControlEvent):
+    def on_item_selected_TipoVehiculo(self,e: ft.ControlEvent):
         # Asigna el valor seleccionado al TextField
-        print("Entra")
-        self.field_name.value = "Hola"
+        self.field_tipovehiculo.value = e.control.text
         self.update()
 
-
+    def on_item_selected_TipoCombustible(self,e: ft.ControlEvent):
+        # Asigna el valor seleccionado al TextField
+        self.field_tipocombustible.value = e.control.text
+        # e.control.item_combustible
+        self.update()
 
 if __name__ == "__main__":
     def main(page: ft.Page):
