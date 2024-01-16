@@ -2,16 +2,15 @@ import math
 from flet import *
 from datetime import datetime
 from DB import conexion
-from DB import VehiculoService
+from Service import VehiculoService
 import flet as ft
 
 
 # the content of the icon tab
 class TabContentVistaMaquinaria(ft.UserControl):
 
-    def __init__(self,page):
+    def __init__(self):
         super().__init__()
-        self.page= page
         self.fila_editar = None
         #text field nombre
         self.field_name = ft.TextField(
