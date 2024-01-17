@@ -99,7 +99,7 @@ class TabContentVistaFaenas(ft.UserControl):
         )
         # text field kilometros area
         self.field_kilometrosa = ft.TextField(
-            label="Horas",
+            label="Kilometros",
             hint_text="Ingrese los kilometros area",
             value="",
             on_change=self.validar_numeros,
@@ -178,8 +178,8 @@ class TabContentVistaFaenas(ft.UserControl):
                     cells=[
                         # DataCell(Text(faena[2])),
                         # DataCell(Text(faena[4])),
-                        DataCell(Text(faena[11])),
-                        DataCell(Text(faena[12])),
+                        DataCell(Text(faena[2])),
+                        DataCell(Text(faena[4])),
                         DataCell(Text(faena[5])),
                         DataCell(Text(faena[6])),
                         DataCell(Text(faena[7])),
@@ -219,7 +219,9 @@ class TabContentVistaFaenas(ft.UserControl):
     def cargarDatos(self, faena):
         self.fila_editar = faena[0]
         self.f_idfaena = faena[0]
+        self.selected_trabajador_id = faena[1]
         self.field_trabajador.value = faena[2]
+        self.selected_Vehiculo_id = faena[3]
         self.field_vehiculo.value = faena[4]
         #self.field_fecha.value = faena[5]
         fecha_str = faena[5].strftime("%d-%m-%Y")
@@ -277,9 +279,9 @@ class TabContentVistaFaenas(ft.UserControl):
             
             fecha = datetime.strptime(self.field_fecha.value, "%d-%m-%Y")
             FaenaService.actualizar_registro_Faena(conexion.conectar(), 1, 
-                                                        self.field_trabajador.value,
+                                                        self.selected_trabajador_id,
                                                         1,
-                                                        self.field_vehiculo.value,
+                                                        self.selected_Vehiculo_id,
                                                         fecha,
                                                         self.field_horas.value,
                                                         self.field_region.value,
@@ -300,8 +302,8 @@ class TabContentVistaFaenas(ft.UserControl):
                         cells=[
                             # DataCell(Text(faena[2])),
                             # DataCell(Text(faena[4])),
-                            DataCell(Text(faena[11])),
-                            DataCell(Text(faena[12])),
+                            DataCell(Text(faena[2])),
+                            DataCell(Text(faena[4])),
                             DataCell(Text(faena[5])),
                             DataCell(Text(faena[6])),
                             DataCell(Text(faena[7])),
@@ -321,9 +323,9 @@ class TabContentVistaFaenas(ft.UserControl):
             """Guardar"""
             fecha = datetime.strptime(self.field_fecha.value, "%d-%m-%Y")
             FaenaService.crear_registro_Faena(conexion.conectar(), 1, self.selected_Vehiculo_id, 
-                                                    self.field_trabajador.value,
+                                                    self.selected_trabajador_id,
                                                     1,
-                                                    self.field_vehiculo.value,
+                                                    self.selected_Vehiculo_id,
                                                     fecha,
                                                     self.field_horas.value,
                                                     self.field_region.value,
@@ -343,8 +345,8 @@ class TabContentVistaFaenas(ft.UserControl):
                         cells=[
                             # DataCell(Text(faena[2])),
                             # DataCell(Text(faena[4])),
-                            DataCell(Text(faena[11])),
-                            DataCell(Text(faena[12])),
+                            DataCell(Text(faena[2])),
+                            DataCell(Text(faena[4])),
                             DataCell(Text(faena[5])),
                             DataCell(Text(faena[6])),
                             DataCell(Text(faena[7])),
