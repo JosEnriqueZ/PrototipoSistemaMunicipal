@@ -1,6 +1,10 @@
 def todos_faenas(cnxn):
     cursor = cnxn.cursor()
-    select_query = "SELECT * FROM Faena"
+    select_query = """select Faena.*,Trabajador.trabNombre,Vehiculo.VehNumeroPlaca
+	from Faena
+	 JOIN TrabajoVehiculo ON Faena.idFaena = TrabajoVehiculo.idFaenaFK
+	 JOIN Vehiculo on Faena.idVehiculoFK= Vehiculo.idVehiculo
+	 join Trabajador on Faena.idTrabajadorFK= Trabajador.idTrabajador"""
     cursor.execute(select_query)
     rows = cursor.fetchall()
     print(rows)
