@@ -168,24 +168,26 @@ class TabContentVistaFaenas(ft.UserControl):
         self.mytabla.rows.clear()
         faenas = FaenaService.todos_faenas(conexion.conectar())
         
-        for vehiculo in faenas:
-            def cargaEditar(vehiculo):
-                return lambda e: self.cargarDatos(vehiculo)
-            def eliminar(vehiculo):
-                return lambda e: self.eliminarDatos(vehiculo)
+        for faena in faenas:
+            def cargaEditar(faena):
+                return lambda e: self.cargarDatos(faena)
+            def eliminar(faena):
+                return lambda e: self.eliminarDatos(faena)
             self.mytabla.rows.append(
                 DataRow(
                     cells=[
-                        DataCell(Text(vehiculo[2])),
-                        DataCell(Text(vehiculo[4])),
-                        DataCell(Text(vehiculo[5])),
-                        DataCell(Text(vehiculo[6])),
-                        DataCell(Text(vehiculo[7])),
-                        DataCell(Text(vehiculo[8])),
-                        DataCell(Text(vehiculo[9])),
-                        DataCell(Text(vehiculo[10])),
-                        DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(vehiculo))),
-                        DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(vehiculo))),
+                        # DataCell(Text(faena[2])),
+                        # DataCell(Text(faena[4])),
+                        DataCell(Text(faena[11])),
+                        DataCell(Text(faena[12])),
+                        DataCell(Text(faena[5])),
+                        DataCell(Text(faena[6])),
+                        DataCell(Text(faena[7])),
+                        DataCell(Text(faena[8])),
+                        DataCell(Text(faena[9])),
+                        DataCell(Text(faena[10])),
+                        DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(faena))),
+                        DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(faena))),
                     ]
                 )
             )
@@ -215,11 +217,13 @@ class TabContentVistaFaenas(ft.UserControl):
         )
 
     def cargarDatos(self, faena):
-        
+        self.fila_editar = faena[0]
         self.f_idfaena = faena[0]
         self.field_trabajador.value = faena[2]
         self.field_vehiculo.value = faena[4]
-        self.field_fecha.value = faena[5]
+        #self.field_fecha.value = faena[5]
+        fecha_str = faena[5].strftime("%d-%m-%Y")
+        self.field_fecha.value = fecha_str
         self.field_horas.value = faena[6]
         self.field_region.value = faena[7]
         self.field_descripcion.value = faena[8]
@@ -236,7 +240,7 @@ class TabContentVistaFaenas(ft.UserControl):
         # Elimina esta fila de la tabla
         self.mytabla.rows.remove(selected_row)
         # Actualiza la página para reflejar los cambios
-        VehiculoService.eliminar_registro_Vehiculo(conexion.conectar(), faena[0])
+        FaenaService.eliminar_registro_Faena(conexion.conectar(), faena[0])
         conexion.cerrar_conexion(conexion.conectar())
         self.update()
     
@@ -271,19 +275,21 @@ class TabContentVistaFaenas(ft.UserControl):
             self.mytabla.rows[self.fila_editar-1].cells[6].content.value = self.field_direccion.value
             self.mytabla.rows[self.fila_editar-1].cells[7].content.value = self.field_kilometrosa.value
             
-            #fecha = datetime.strptime(self.field_colorvehiculo.value, "%d-%m-%Y")
-            VehiculoService.actualizar_registro_Vehiculo(conexion.conectar(), 1, 
+            fecha = datetime.strptime(self.field_fecha.value, "%d-%m-%Y")
+            FaenaService.actualizar_registro_Faena(conexion.conectar(), 1, 
                                                         self.field_trabajador.value,
+                                                        1,
                                                         self.field_vehiculo.value,
-                                                        self.field_fecha.value,
+                                                        fecha,
                                                         self.field_horas.value,
                                                         self.field_region.value,
                                                         self.field_descripcion.value,
                                                         self.field_direccion.value,
-                                                        self.field_kilometrosa.value)
+                                                        self.field_kilometrosa.value,
+                                                        self.fila_editar)
             conexion.cerrar_conexion(conexion.conectar())
             self.mytabla.rows.clear()
-            faenas = VehiculoService.todos_Vehiculo(conexion.conectar())
+            faenas = FaenaService.todos_faenas(conexion.conectar())
             for faena in faenas:
                 def cargaEditar(faena):
                     return lambda e: self.cargarDatos(faena)
@@ -292,31 +298,33 @@ class TabContentVistaFaenas(ft.UserControl):
                 self.mytabla.rows.append(
                     DataRow(
                         cells=[
-                            DataCell(Text(faena[2])),
-                            DataCell(Text(faena[3])),
-                            DataCell(Text(faena[4])),
+                            # DataCell(Text(faena[2])),
+                            # DataCell(Text(faena[4])),
+                            DataCell(Text(faena[11])),
+                            DataCell(Text(faena[12])),
                             DataCell(Text(faena[5])),
                             DataCell(Text(faena[6])),
                             DataCell(Text(faena[7])),
                             DataCell(Text(faena[8])),
+                            DataCell(Text(faena[9])),
+                            DataCell(Text(faena[10])),
                             DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(faena))),
                             DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(faena))),
                         ]
                     )
                 )
-                # self.update()
-            faenas = VehiculoService.todos_Vehiculo(conexion.conectar())
+                self.update()
+            faenas = FaenaService.todos_faenas(conexion.conectar())
             # Actualiza las demás celdas de la misma manera
             self.fila_editar = None  # Restablece el índice de la fila que se está editando
-            self.update()
         else:
-
             """Guardar"""
-            #fecha = datetime.strptime(self.field_colorvehiculo.value, "%d-%m-%Y")
-            VehiculoService.crear_registro_Vehiculo(conexion.conectar(), 1, self.selected_Vehiculo_id, 
+            fecha = datetime.strptime(self.field_fecha.value, "%d-%m-%Y")
+            FaenaService.crear_registro_Faena(conexion.conectar(), 1, self.selected_Vehiculo_id, 
                                                     self.field_trabajador.value,
+                                                    1,
                                                     self.field_vehiculo.value,
-                                                    self.field_fecha.value,
+                                                    fecha,
                                                     self.field_horas.value,
                                                     self.field_region.value,
                                                     self.field_descripcion.value,
@@ -324,7 +332,7 @@ class TabContentVistaFaenas(ft.UserControl):
                                                     self.field_kilometrosa.value)
             conexion.cerrar_conexion(conexion.conectar())
             self.mytabla.rows.clear()
-            faenas = VehiculoService.todos_Vehiculo(conexion.conectar())
+            faenas = FaenaService.todos_faenas(conexion.conectar())
             for faena in faenas:
                 def cargaEditar(faena):
                     return lambda e: self.cargarDatos(faena)
@@ -333,13 +341,16 @@ class TabContentVistaFaenas(ft.UserControl):
                 self.mytabla.rows.append(
                     DataRow(
                         cells=[
-                            DataCell(Text(faena[2])),
-                            DataCell(Text(faena[3])),
-                            DataCell(Text(faena[4])),
+                            # DataCell(Text(faena[2])),
+                            # DataCell(Text(faena[4])),
+                            DataCell(Text(faena[11])),
+                            DataCell(Text(faena[12])),
                             DataCell(Text(faena[5])),
                             DataCell(Text(faena[6])),
                             DataCell(Text(faena[7])),
                             DataCell(Text(faena[8])),
+                            DataCell(Text(faena[9])),
+                            DataCell(Text(faena[10])),
                             DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(faena))),
                             DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(faena))),
                         ]
