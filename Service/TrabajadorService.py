@@ -25,7 +25,6 @@ def actualizar_registro_Trabajador(cnxn, trabActivo, trabNombre, trabApellido, t
     cursor = cnxn.cursor()
     update_query = "UPDATE Trabajador SET trabActivo = ? ,trabNombre = ? ,trabApellido = ? ,trabFechaNac = ? ,trabCel = ? ,trabTrabador = ? ,trabDNI = ? ,trabDireccion = ? ,trabLicenciaConducir = ? WHERE idTrabajador = ?"
     data = ( trabActivo, trabNombre, trabApellido, trabFechaNac, trabCel, trabTrabador, trabDNI, trabDireccion, trabLicenciaConducir, idTrabajador)
-    
     cursor.execute(update_query, data)
     cnxn.commit()
 

@@ -39,7 +39,7 @@ def main(page: ft.Page):
                 ),
                 ft.Tab(
                     icon=ft.icons.DIRECTIONS_CAR_FILLED,
-                    text="Maquinaria",
+                    text="Vehiculos",
                     content=maquinariavista
                 ),
                 ft.Tab(
