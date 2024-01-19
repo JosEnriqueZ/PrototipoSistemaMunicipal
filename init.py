@@ -8,6 +8,8 @@ from View.vistaHome import TabcontentVistaHome
 from View.vistaTipoCombustible import TabContentVistaTipoCombustible
 from View.vistaReport import TabContentVistaReporte
 from View.vistaTipoVehiculo import TabContentVistaTipoVehiculo
+from View.vistaProducto import TabContentVistaProducto
+from View.vistaTrabajoVehiculo import TabContentVistaTrabajoVehiculo
 from View.vistaUsuario import TabContentVistaUsuario
 
 
@@ -25,15 +27,16 @@ def main(page: ft.Page):
 
     # # Asigna la función al evento on_resize de la página
     # page.on_resize = on_resize
-    
 
-    viewTipoCombustible= TabContentVistaTipoCombustible()
-    viewReporte             = TabContentVistaReporte()
+    viewtipocombustible     = TabContentVistaTipoCombustible()
     viewVehiculo            = TabContentVistaVehiculo()
     viewTrabajador          = TabContentVistaTrabajadores()
     viewFaena               = TabContentVistaFaenas()
     viewHome                = TabcontentVistaHome()
     viewTipVehiculo         = TabContentVistaTipoVehiculo()
+    viewReporte             = TabContentVistaReporte()
+    viewProductos           = TabContentVistaProducto()
+    viewtrabajovehiculo     = TabContentVistaTrabajoVehiculo()
     viewUsuario             = TabContentVistaUsuario()
 
     page.add(
@@ -75,7 +78,17 @@ def main(page: ft.Page):
                 ft.Tab(
                     icon=ft.icons.RICE_BOWL,
                     text="Tipo Combustible",
-                    content=viewTipoCombustible
+                    content=viewtipocombustible
+                ),
+                ft.Tab(
+                    icon=ft.icons.RICE_BOWL,
+                    text="Productos",
+                    content=viewProductos
+                ),
+                ft.Tab(
+                    icon=ft.icons.RICE_BOWL,
+                    text="Trabajo Vehiculo",
+                    content=viewtrabajovehiculo
                 ),
                 ft.Tab(
                     icon=ft.icons.RICE_BOWL,
