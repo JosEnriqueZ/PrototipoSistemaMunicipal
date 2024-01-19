@@ -1,10 +1,11 @@
 #importaciones
 import flet as ft
 from random import choice
-from View.vistaMaquinaria import TabContentVistaMaquinaria
+from View.vistaVehiculo import TabContentVistaVehiculo
 from View.vistaTrabajadores import TabContentVistaTrabajadores
 from View.vistaFaenas import TabContentVistaFaenas
 from View.vistaHome import TabcontentVistaHome
+from View.vistaTipoVehiculo import TabContentVistaTipoVehiculo
 
 def main(page: ft.Page):
     page.title = "SISTEMA DE CONTROL Y SEGUIMIENTO DE MAQUINAS VEHICULOS Y EQUIPOS(SCS)"
@@ -21,10 +22,11 @@ def main(page: ft.Page):
     # # Asigna la función al evento on_resize de la página
     # page.on_resize = on_resize
     
-    maquinariavista = TabContentVistaMaquinaria()
-    maquinariatrabajador = TabContentVistaTrabajadores()
-    maquinariafaena = TabContentVistaFaenas()
-    maquinariahome = TabcontentVistaHome()
+    viewVehiculo            = TabContentVistaVehiculo()
+    viewTrabajador          = TabContentVistaTrabajadores()
+    viewFaena               = TabContentVistaFaenas()
+    viewHome                = TabcontentVistaHome()
+    viewTipVehiculo         = TabContentVistaTipoVehiculo()
 
     page.add(
 
@@ -35,22 +37,27 @@ def main(page: ft.Page):
                 ft.Tab(
                     icon=ft.icons.HOME,
                     text="Home",
-                    content=maquinariahome
+                    content=viewHome
                 ),
                 ft.Tab(
                     icon=ft.icons.DIRECTIONS_CAR_FILLED,
                     text="Vehiculos",
-                    content=maquinariavista
+                    content=viewVehiculo
+                ),
+                ft.Tab(
+                    icon=ft.icons.CAR_CRASH,
+                    text="Tipo Vehiculo",
+                    content=viewTipVehiculo
                 ),
                 ft.Tab(
                     icon=ft.icons.PERSON,
                     text="Trabajadores",
-                    content=maquinariatrabajador
+                    content=viewTrabajador
                 ),
                 ft.Tab(
                     icon=ft.icons.BOOK,
                     text="Faenas",
-                    content=maquinariafaena
+                    content=viewFaena
                 )
             ]
         ),

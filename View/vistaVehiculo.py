@@ -2,15 +2,15 @@ import math
 from flet import *
 from datetime import datetime
 from DB import conexion
-from Service import VehiculoService
-from Service import TipoVehiculoService
-from Service import TipoCombustibleService
+from Model.Services import VehiculoService
+from Model.Services import TipoVehiculoService
+from Controllers.VehiculoController import VehiculoController
+from Model.Entities.Vehiculo import Vehiculo
 
 import flet as ft
 
-
 # the content of the icon tab
-class TabContentVistaMaquinaria(ft.UserControl):
+class TabContentVistaVehiculo(ft.UserControl):
 
     def __init__(self):
         super().__init__()
@@ -27,7 +27,8 @@ class TabContentVistaMaquinaria(ft.UserControl):
             keyboard_type=ft.KeyboardType.TEXT,
         )
         self.tipoVehiculo_id_map = {}
-        data = TipoVehiculoService.todos_TipoVehiculo(conexion.conectar())
+        controlador = VehiculoController()
+        data = controlador.ListTipoVehiculo()
         self.items_TipoVehiculo = ft.PopupMenuButton(
             items=[ft.PopupMenuItem(text=d[2], checked=False, on_click=self.on_item_selected_TipoVehiculo) for d in data])
         for d in data:
@@ -41,7 +42,6 @@ class TabContentVistaMaquinaria(ft.UserControl):
             on_change=self.validar_nombre,
             #helper_text="Optional[str]",
             keyboard_type=ft.KeyboardType.TEXT,
-
         )
         self.tipoCombustible_id_map = {}
         data = TipoCombustibleService.todos_TipoCombustible(conexion.conectar())
@@ -421,19 +421,6 @@ class TabContentVistaMaquinaria(ft.UserControl):
             e.control.error_text = ""
         self.update()
 
-    # def validar_fecha(self, e: ft.ControlEvent):
-    #     # Verifica si el valor ingresado por el usuario es una fecha válida.
-    #     fecha_str = e.control.value.strip()
-    #     try:
-    #         # Intenta convertir la cadena de texto a una fecha.
-    #         datetime.strptime(fecha_str, "%d-%m-%Y")
-    #         e.control.error_text = ""
-    #     except ValueError:
-    #         # Si la conversión falla, muestra un mensaje de error.
-    #         e.control.error_text = "Por favor, ingrese una fecha válida en el formato DD-MM-YYYY."
-    #     self.update()
-
-
     def on_item_selected_TipoVehiculo(self,e: ft.ControlEvent):
         # Asigna el valor seleccionado al TextField
         self.field_tipovehiculo.value = e.control.text
@@ -447,6 +434,34 @@ class TabContentVistaMaquinaria(ft.UserControl):
         self.selected_tipoCombustible_id = self.tipoCombustible_id_map[e.control.text]
         print(self.selected_tipoCombustible_id)
         self.update()
+
+    def onFillData(self):
+        #Cargas datos en la tabla
+        controlador = Vehi()
+        #Cargas datos en la tabla
+        for t in controlador.ListTrabajadores():
+            def cargaEditar(t):
+                return lambda e: self.cargarDatos(e, t)
+            def eliminar(t):
+                return lambda e: self.eliminarDatos(e, t)
+            self.mytabla.rows.append(
+                DataRow(
+                    cells=[
+                        DataCell(Text(t.trabNombre)),
+                        DataCell(Text(t.trabApellido)),
+                        DataCell(Text(t.trabfechaNac)),
+                        DataCell(Text(t.trabCel)),
+                        DataCell(Text(t.trabTrabador)),
+                        DataCell(Text(t.trabDNI)),
+                        DataCell(Text(t.trabDireccion)),
+                        DataCell(Text(t.trabLicenciaConducir)),
+                        DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(t))),
+                        DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(t))),
+                    ]
+                )
+            )
+        print('Tabla Refresh')
+        return self.mytabla
 
 if __name__ == "__main__":
     def main(page: ft.Page):
