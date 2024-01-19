@@ -1,15 +1,23 @@
+from datetime import datetime
+
 class Trabajador:
+
     def __init__(self, idTrabajador, trabActivo, trabNombre, trabApellido, trabfechaNac, trabCel, trabTrabador, trabDNI, trabDireccion, trabLicenciaConducir):
         self.idTrabajador = idTrabajador
         self.trabActivo = trabActivo
         self.trabNombre = trabNombre
         self.trabApellido = trabApellido
-        self.trabfechaNac = trabfechaNac
+        #Formateo de la fecha de Nacimiento
+        fecha = datetime.strptime(trabfechaNac, "%d-%m-%Y")
+        self.trabfechaNac = fecha
         self.trabCel = trabCel
         self.trabTrabador = trabTrabador
         self.trabDNI = trabDNI
         self.trabDireccion = trabDireccion
         self.trabLicenciaConducir = trabLicenciaConducir
+
+    def __str__(self):
+        return f"MiEntidad(idTrabajador={self.idTrabajador}, trabNombre={self.trabNombre})"
 
     def get_idTrabajador(self):
         return self.idTrabajador

@@ -3,7 +3,7 @@ from flet import *
 from datetime import datetime
 from DB import conexion
 from Service import FaenaService
-from Service import TrabajadorService
+from Model.Services import TrabajadorService
 from Service import UsuarioService
 from Service import VehiculoService
 from Service import TipoVehiculoService

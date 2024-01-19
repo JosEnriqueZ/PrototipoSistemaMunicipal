@@ -2,7 +2,9 @@ import math
 from flet import *
 from datetime import datetime
 from DB import conexion
-from Service import TrabajadorService
+from Model.Services import TrabajadorService
+from Controllers.TrabajadorController import TrabajadorController
+from Model.Entities.Trabajador import Trabajador
 import flet as ft
 
 # the vista de trabajadores
@@ -29,7 +31,6 @@ class TabContentVistaTrabajadores(ft.UserControl):
             on_change=self.validar_nombre,
             #helper_text="Optional[str]",
             keyboard_type=ft.KeyboardType.TEXT,
-
         )
 
         # text field Fecha Nacimiento
@@ -39,7 +40,6 @@ class TabContentVistaTrabajadores(ft.UserControl):
             value="",
             on_change=self.validar_fecha,
             keyboard_type=ft.KeyboardType.TEXT,
-
         )
 
         # text field Numero de Telefono
@@ -49,7 +49,6 @@ class TabContentVistaTrabajadores(ft.UserControl):
             value="",
             on_change=self.validar_numeros,
             keyboard_type=ft.KeyboardType.NUMBER,
-
         )
 
         # text field Numero de Trabajador
@@ -58,7 +57,6 @@ class TabContentVistaTrabajadores(ft.UserControl):
             hint_text="Ingrese Rol del Trabajador",
             value="",
             keyboard_type=ft.KeyboardType.TEXT,
-
         )
 
         # text field Numero de DNI
@@ -143,36 +141,14 @@ class TabContentVistaTrabajadores(ft.UserControl):
                 ),
                 ft.Row(
                     [self.field_direccion, self.field_licencia],
-                ),
-                
+                ),   
             ],
             alignment=ft.MainAxisAlignment.START,
             spacing=11
         )
         self.mytabla.rows.clear()
-        trabajadores = TrabajadorService.todos_trabajadores(conexion.conectar())
-        for trabajador in trabajadores:
-            def cargaEditar(trabajador):
-                return lambda e: self.cargarDatos(trabajador)
-            def eliminar(trabajador):
-                return lambda e: self.eliminarDatos(trabajador)
-            self.mytabla.rows.append(
-                DataRow(
-                    cells=[
-                        DataCell(Text(trabajador[2])),
-                        DataCell(Text(trabajador[3])),
-                        DataCell(Text(trabajador[4])),
-                        DataCell(Text(trabajador[5])),
-                        DataCell(Text(trabajador[6])),
-                        DataCell(Text(trabajador[7])),
-                        DataCell(Text(trabajador[8])),
-                        DataCell(Text(trabajador[9])),
-                        DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(trabajador))),
-                        DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(trabajador))),
-                    ]
-                )
-            )
-        #self.update()
+        #Cargas datos en la tabla
+        self.onFillData()
         return ft.Column(
             [
                 ft.Text("Registro:", weight=ft.FontWeight.BOLD, size=20),
@@ -193,34 +169,32 @@ class TabContentVistaTrabajadores(ft.UserControl):
                 )
             ],
             alignment=ft.MainAxisAlignment.START,
-            #scroll=ft.ScrollMode.HIDDEN,
             spacing=20
         )
-
-    def cargarDatos(self, trabajador):
-        self.fila_editar = trabajador[0]
-        self.field_name.value = trabajador[2]
-        self.field_apellido.value = trabajador[3]
-        fecha_str = trabajador[4].strftime("%d-%m-%Y")
-        self.field_fechaNac.value = fecha_str
-        self.field_numeroCel.value = trabajador[5]
-        self.field_traba.value = trabajador[6]
-        self.field_numeroDNI.value = trabajador[7]
-        self.field_direccion.value = trabajador[8]
-        self.field_licencia.value = trabajador[9]
-        self.boton_guardar.visible=False
-        self.boton_editar.visible=True
+    
+    #Cargado de datos para la edicion
+    def cargarDatos(self, e: ft.ControlEvent, t:Trabajador):
+        self.fila_editar            = t.idTrabajador
+        self.field_name.value       = t.trabNombre
+        self.field_apellido.value   = t.trabApellido
+        fecha_str                   = t.trabfechaNac.strftime("%d-%m-%Y")
+        self.field_fechaNac.value   = fecha_str
+        self.field_numeroCel.value  = t.trabCel
+        self.field_traba.value      = t.trabTrabador
+        self.field_numeroDNI.value  = t.trabDNI
+        self.field_direccion.value  = t.trabDireccion
+        self.field_licencia.value   = t.trabLicenciaConducir
+        self.boton_guardar.visible  = False
+        self.boton_editar.visible   = True
         self.update()
-
-    def eliminarDatos(self, trabajador):
-        # Encuentra la fila que contiene los datos del trabajador
-        selected_row = next(row for row in self.mytabla.rows if row.cells[0].content.value == trabajador[2])
-        # Elimina esta fila de la tabla
-        self.mytabla.rows.remove(selected_row)
-
-        TrabajadorService.eliminar_registro_trabajador(conexion.conectar(), trabajador[0])
-        conexion.cerrar_conexion(conexion.conectar())
+        
+    #DELETE
+    def eliminarDatos(self, e: ft.ControlEvent, trabajador):
+        controlador = TrabajadorController()
+        controlador.DeleteTrabajadores(trabajador)
         # Actualiza la página para reflejar los cambios
+        self.mytabla.rows.clear()
+        self.mytabla = self.onFillData()
         self.update()
     
     def LimpiarDatos(self, e: ft.ControlEvent):
@@ -235,99 +209,50 @@ class TabContentVistaTrabajadores(ft.UserControl):
         self.field_direccion.value = ""
         self.field_licencia.value = ""
         self.update()
+        print("Limpia")
+        
     
-    
+    # CONTROLADo SAVE and UPDATE
     def CapturaDatos(self, e: ft.ControlEvent):
         self.boton_guardar.visible=True
         self.boton_editar.visible=False
-
         if self.fila_editar is not None:
-            self.mytabla.rows[self.fila_editar-1].cells[0].content.value = self.field_name.value
-            self.mytabla.rows[self.fila_editar-1].cells[1].content.value = self.field_apellido.value
-            self.mytabla.rows[self.fila_editar-1].cells[2].content.value = self.field_fechaNac.value
-            self.mytabla.rows[self.fila_editar-1].cells[3].content.value = self.field_numeroCel.value
-            self.mytabla.rows[self.fila_editar-1].cells[4].content.value = self.field_traba.value
-            self.mytabla.rows[self.fila_editar-1].cells[5].content.value = self.field_numeroDNI.value
-            self.mytabla.rows[self.fila_editar-1].cells[6].content.value = self.field_direccion.value
-            self.mytabla.rows[self.fila_editar-1].cells[7].content.value = self.field_licencia.value
-
-            fecha = datetime.strptime(self.field_fechaNac.value, "%d-%m-%Y")
-            TrabajadorService.actualizar_registro_Trabajador(conexion.conectar(), 1, self.field_name.value, self.field_apellido.value, fecha, self.field_numeroCel.value, self.field_traba.value, self.field_numeroDNI.value, self.field_direccion.value, self.field_licencia.value,(self.fila_editar))
-            conexion.cerrar_conexion(conexion.conectar())
-            self.mytabla.rows.clear()
-            trabajadores = TrabajadorService.todos_trabajadores(conexion.conectar())
-            for trabajador in trabajadores:
-                def cargaEditar(trabajador):
-                    return lambda e: self.cargarDatos(trabajador)
-                def eliminar(trabajador):
-                    return lambda e: self.eliminarDatos(trabajador)
-                self.mytabla.rows.append(
-                    DataRow(
-                        cells=[
-                            DataCell(Text(trabajador[2])),
-                            DataCell(Text(trabajador[3])),
-                            DataCell(Text(trabajador[4])),
-                            DataCell(Text(trabajador[5])),
-                            DataCell(Text(trabajador[6])),
-                            DataCell(Text(trabajador[7])),
-                            DataCell(Text(trabajador[8])),
-                            DataCell(Text(trabajador[9])),
-                            DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(trabajador))),
-                            DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(trabajador))),
-                        ]
-                    )
-                )
-                self.update()
-            trabajadores = TrabajadorService.todos_trabajadores(conexion.conectar())
+            controlador = TrabajadorController()
+            t = Trabajador( self.fila_editar,
+                            1, 
+                            self.field_name.value, 
+                            self.field_apellido.value, 
+                            self.field_fechaNac.value, 
+                            self.field_numeroCel.value, 
+                            self.field_traba.value, 
+                            self.field_numeroDNI.value, 
+                            self.field_direccion.value, 
+                            self.field_licencia.value,
+                            )
+            #EDIT
+            controlador.SaveOrUpdateTrabajadores(False, t)
             # Actualiza las demás celdas de la misma manera
             self.fila_editar = None  # Restablece el índice de la fila que se está editando
         else:
-            fecha = datetime.strptime(self.field_fechaNac.value, "%d-%m-%Y")
-            TrabajadorService.crear_registro_trabajador(conexion.conectar(), 1, self.field_name.value, self.field_apellido.value, fecha, self.field_numeroCel.value, self.field_traba.value, self.field_numeroDNI.value, self.field_direccion.value, self.field_licencia.value)
-            conexion.cerrar_conexion(conexion.conectar())
-            self.mytabla.rows.clear()
-            trabajadores = TrabajadorService.todos_trabajadores(conexion.conectar())
-            for trabajador in trabajadores:
-                def cargaEditar(trabajador):
-                    return lambda e: self.cargarDatos(trabajador)
-                def eliminar(trabajador):
-                    return lambda e: self.eliminarDatos(trabajador)
-                self.mytabla.rows.append(
-                    DataRow(
-                        cells=[
-                            DataCell(Text(trabajador[2])),
-                            DataCell(Text(trabajador[3])),
-                            DataCell(Text(self.field_fechaNac.value)),
-                            DataCell(Text(trabajador[5])),
-                            DataCell(Text(trabajador[6])),
-                            DataCell(Text(trabajador[7])),
-                            DataCell(Text(trabajador[8])),
-                            DataCell(Text(trabajador[9])),
-                            DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(trabajador))),
-                            DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(trabajador))),
-                        ]
-                    )
-                )
-                self.update()
-            # Si no se está editando ninguna fila, agrega una nueva fila
-            # self.mytabla.rows.append(
-            #     DataRow(
-            #         cells=[
-            #             DataCell(Text(self.field_name.value)),
-            #             DataCell(Text(self.field_apellido.value)),
-            #             DataCell(Text(self.field_fechaNac.value)),
-            #             DataCell(Text(self.field_numeroCel.value)),
-            #             DataCell(Text(self.field_traba.value)),
-            #             DataCell(Text(self.field_numeroDNI.value)),
-            #             DataCell(Text(self.field_direccion.value)),
-            #             DataCell(Text(self.field_licencia.value)),
-            #             DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE)),
-            #             DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED)),
-            #         ]
-                
-            #     )
-            # )
-        #self.update()
+            controlador = TrabajadorController()
+            t = Trabajador( self.fila_editar,
+                            1, 
+                            self.field_name.value, 
+                            self.field_apellido.value, 
+                            self.field_fechaNac.value, 
+                            self.field_numeroCel.value, 
+                            self.field_traba.value, 
+                            self.field_numeroDNI.value, 
+                            self.field_direccion.value, 
+                            self.field_licencia.value,
+                            )
+            controlador.SaveOrUpdateTrabajadores(True, t)   
+        self.mytabla.rows.clear()
+        self.mytabla = self.onFillData()
+        self.LimpiarDatos(e)
+        self.update()
+        
+
     #Validaciones
     def validar_nombre(self, e: ft.ControlEvent):
             # Verifica si el valor ingresado por el usuario contiene solo letras.
@@ -356,6 +281,35 @@ class TabContentVistaTrabajadores(ft.UserControl):
             # Si la conversión falla, muestra un mensaje de error.
             e.control.error_text = "Por favor, ingrese una fecha válida en el formato DD-MM-YYYY."
         self.update()
+
+    def onFillData(self):
+        #Cargas datos en la tabla
+        controlador = TrabajadorController()
+        #Cargas datos en la tabla
+        for t in controlador.ListTrabajadores():
+            def cargaEditar(t):
+                return lambda e: self.cargarDatos(e, t)
+            def eliminar(t):
+                return lambda e: self.eliminarDatos(e, t)
+            self.mytabla.rows.append(
+                DataRow(
+                    cells=[
+                        DataCell(Text(t.trabNombre)),
+                        DataCell(Text(t.trabApellido)),
+                        DataCell(Text(t.trabfechaNac)),
+                        DataCell(Text(t.trabCel)),
+                        DataCell(Text(t.trabTrabador)),
+                        DataCell(Text(t.trabDNI)),
+                        DataCell(Text(t.trabDireccion)),
+                        DataCell(Text(t.trabLicenciaConducir)),
+                        DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(t))),
+                        DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(t))),
+                    ]
+                )
+            )
+        print('Tabla Refresh')
+        return self.mytabla
+
 
 if __name__ == "__main__":
     def main(page: ft.Page):
