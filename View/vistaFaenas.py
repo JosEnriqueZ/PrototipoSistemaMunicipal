@@ -85,7 +85,7 @@ class TabContentVistaFaenas(ft.UserControl):
         )
         # text field Horas
         self.field_horas = ft.TextField(
-            label="Horas",
+            label="Horas de trabajo",
             hint_text="Ingrese las horas",
             value="",
             on_change=self.validar_numeros,
@@ -105,16 +105,15 @@ class TabContentVistaFaenas(ft.UserControl):
         self.field_descripcion = ft.TextField(
             label="Descripcion",
             value="",
-            on_change=self.validar_nombre,
+            #on_change=self.validar_nombre,
             #helper_text="Optional[str]",
             keyboard_type=ft.KeyboardType.TEXT,
 
         )
         # text field Direccion
         self.field_direccion = ft.TextField(
-            label="Direccion",
+            label="Direccion de Trabajo ",
             value="",
-            on_change=self.validar_nombre,
             #helper_text="Optional[str]",
             keyboard_type=ft.KeyboardType.TEXT,
 
@@ -122,7 +121,7 @@ class TabContentVistaFaenas(ft.UserControl):
         # text field kilometros area
         self.field_kilometrosa = ft.TextField(
             label="Kilometros",
-            hint_text="Ingrese los kilometros area",
+            hint_text="Ingrese los kilometros de transpote al area de trabajo",
             value="",
             on_change=self.validar_numeros,
             keyboard_type=ft.KeyboardType.NUMBER,
@@ -178,7 +177,7 @@ class TabContentVistaFaenas(ft.UserControl):
                     [self.field_vehiculo,self.items_Vehiculo,self.field_fecha,self.field_horas],
                 ),
                 ft.Row(
-                    [self.field_region, self.field_descripcion,self.field_kilometrosa],
+                    [self.field_region, self.field_descripcion,self.field_direccion,self.field_kilometrosa],
                 )
             ],
             alignment=ft.MainAxisAlignment.START,
@@ -357,9 +356,9 @@ class TabContentVistaFaenas(ft.UserControl):
         controlador = FaenaController()
         #Cargas datos en la tabla
         for u in controlador.ListFaena():
-            def cargaEditar(v):
+            def cargaEditar(u):
                 return lambda e: self.cargarDatos(e, u)
-            def eliminar(v):
+            def eliminar(u):
                 return lambda e: self.eliminarDatos(e, u)
             self.mytabla.rows.append(
                 DataRow(

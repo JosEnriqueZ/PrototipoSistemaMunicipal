@@ -143,7 +143,7 @@ class TabContentVistaTipoVehiculo(ft.UserControl):
                             self.field_descripcion.value
                             )
             #EDIT
-            controlador.SaveOrUpdateTipoVehiculoes(False, t)
+            controlador.SaveOrUpdateTipoVehiculo(False, t)
             # Actualiza las demás celdas de la misma manera
             self.fila_editar = None  # Restablece el índice de la fila que se está editando
         else:

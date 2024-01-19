@@ -33,14 +33,14 @@ def leer_registro_TipoVehiculo(cnxn, tv:TipoVehiculo):
 
 def actualizar_registro_TipoVehiculo(cnxn, tv:TipoVehiculo):
     cursor = cnxn.cursor()
-    update_query = "UPDATE TipoVehiculo SET tcActivo = ? ,tcCodigoCombustible = ? ,tcNombre = ? WHERE idTipoVehiculo = ?"
-    data = (tv.tcActivo,tv.tcCodigoCombustible,tv.tcNombre, tv.idTipoCombustible)
+    update_query = "UPDATE TipoVehiculo SET tvActivo = ? ,tvNombre = ? ,tvDescripcion = ? WHERE idTipoVehiculo = ?"
+    data = (tv.tvActivo,tv.tvNombre,tv.tvDescripcion, tv.idTipoVehiculo)
     cursor.execute(update_query, data)
     cnxn.commit()
 
 def eliminar_registro_TipoVehiculo(cnxn,  tv:TipoVehiculo):
     cursor = cnxn.cursor()
-    delete_query = "UPDATE TipoVehiculo SET tcActivo = 0 WHERE idTipoVehiculo = ?"
+    delete_query = "UPDATE TipoVehiculo SET tvActivo = 0 WHERE idTipoVehiculo = ?"
     data = (tv.idTipoVehiculo)
     cursor.execute(delete_query, data)
     cnxn.commit()

@@ -64,7 +64,7 @@ class TabContentVistaVehiculo(ft.UserControl):
 
         # text field Peso del Vehiculo
         self.field_pesovehiculo = ft.TextField(
-            label="Peso del Vehiculo",
+            label="Peso del Vehiculo(Toneladas)",
             hint_text="Ingrese Peso del Vehiculo",
             value="",
             on_change=self.validar_numeros,
