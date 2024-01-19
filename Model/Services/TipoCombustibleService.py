@@ -3,7 +3,7 @@ from Model.Entities import TipoCombustible
 
 def todos_TipoCombustible(cnxn):
     cursor = cnxn.cursor()
-    select_query = "SELECT * FROM TipoCombustible"
+    select_query = "SELECT * FROM TipoCombustible WHERE tcActivo = 1"
     cursor.execute(select_query)
     rows = cursor.fetchall()
     return rows

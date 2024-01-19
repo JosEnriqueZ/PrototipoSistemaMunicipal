@@ -63,8 +63,8 @@ class TabContentVistaReporte(ft.UserControl):
             self.mytabla.rows.append(
                 DataRow(
                     cells=[
-                        DataCell(Text(t.idTrabajadorFK)),
-                        DataCell(Text(t.idFaenaFK)),
+                        DataCell(Text(t.Nombre)),
+                        DataCell(Text(t.faenaDescripcion)),
                         DataCell(Text(t.reportTipo)),
                         DataCell(Text(t.reportPlacaMaquinaria)),
                         DataCell(Text(t.reportFecha)),

@@ -7,7 +7,7 @@ def todos_faenas(cnxn):
 SELECT f.*, t.trabNombre, u.usuName ,CONCAT(v.VehNumeroPlaca,' - ',v.idVehiculo) FROM Faena as f
 left join Trabajador    as t on t.idTrabajador    = f.idTrabajadorFK
 left join Vehiculo        as v on v.idVehiculo    = f.idVehiculoFK
-left join Usuario        as u on u.idUsuario        = f.idUsuarioFK"""
+left join Usuario        as u on u.idUsuario        = f.idUsuarioFK where f.faenaActivo=1"""
     cursor.execute(select_query)
     rows = cursor.fetchall()
     print(rows)

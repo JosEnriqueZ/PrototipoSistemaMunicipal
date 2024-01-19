@@ -107,8 +107,8 @@ class TabContentVistaTipoVehiculo(ft.UserControl):
     #Cargado de datos para la edicion
     def cargarDatos(self, e: ft.ControlEvent, tv:TipoVehiculo):
         self.fila_editar                = tv.idTipoVehiculo
-        self.field_name.value           = tv.tv
-        self.field_descripcion.value    = tv.trabApellido
+        self.field_name.value           = tv.tvNombre
+        self.field_descripcion.value    = tv.tvDescripcion
         self.boton_guardar.visible      = False
         self.boton_editar.visible       = True
         self.update()

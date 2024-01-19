@@ -2,7 +2,7 @@ from Model.Entities import TipoVehiculo
 
 def todos_TipoVehiculo(cnxn):
     cursor = cnxn.cursor()
-    select_query = "SELECT * FROM TipoVehiculo"
+    select_query = """SELECT * FROM TipoVehiculo where tvActivo = 1"""
     cursor.execute(select_query)
     rows = cursor.fetchall()
     #print(rows)
