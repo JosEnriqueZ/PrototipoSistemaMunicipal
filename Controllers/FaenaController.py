@@ -5,6 +5,7 @@ from Model.Services import TrabajadorService
 from Model.Services import VehiculoService
 from Model.Services import UsuarioService
 from Model.Entities import Faena
+from Model.Entities import Vehiculo
 
 class FaenaController():
 
@@ -51,6 +52,17 @@ class FaenaController():
         conexion.cerrar_conexion(conx)
         return ListTipoFaena
 
+    def ListByFechaFaena(self, f:Faena):
+        conx = conexion.conectar()
+        FaenaService.leer_registro_FaenaxFecha(conx,f)
+        conexion.cerrar_conexion(conx)
+        return True
+    
+    def ListByVehiculoId(self, v:Vehiculo):
+        conx = conexion.conectar()
+        FaenaService.leer_registro_FaenaxVehiculo(conx,v)
+        conexion.cerrar_conexion(conx)
+        return True
         
 
 

@@ -1,4 +1,5 @@
 from Model.Entities.Faena import Faena
+from Model.Entities.Vehiculo import Vehiculo
 
 
 def todos_faenas(cnxn):
@@ -41,3 +42,31 @@ def eliminar_registro_Faena(cnxn, f:Faena):
     data = (f.idFaena)
     cursor.execute(delete_query, data)
     cnxn.commit()
+
+
+def leer_registro_FaenaxFecha(cnxn, fecha, vehiculo):
+    cursor = cnxn.cursor()
+    select_query = """Select f.faenaFechaTrabajo, CONCAT(v.VehNumeroPlaca,'/',tv.tvNombre,' - ',v.VehColor,' - ',v.VehMarca), CONCAT(t.trabDNI,' - ',t.trabApellido,' - ',t.trabNombre,' - ',t.trabLicenciaConducir) 
+    from Faena as f
+    left join Vehiculo as v on v.idVehiculo    = f.idVehiculoFK
+    left join Trabajador as t on t.idTrabajador    = f.idTrabajadorFK
+    left join TipoVehiculo as tv on tv.idTipoVehiculo = v.tipoVehiculoFK
+    where f.faenaFechaTrabajo = ? and v.idVehiculo = ?"""   
+    data = (fecha, vehiculo)
+    cursor.execute(select_query, data)
+    rows = cursor.fetchall()
+    return rows
+ 
+
+def leer_registro_FaenaxVehiculo(cnxn, v:Vehiculo):
+    cursor = cnxn.cursor()
+    select_query = """Select f.faenaFechaTrabajo, CONCAT(v.VehNumeroPlaca,'/',tv.tvNombre,' - ',v.VehColor,' - ',v.VehMarca), CONCAT(t.trabDNI,' - ',t.trabApellido,' - ',t.trabNombre,' - ',t.trabLicenciaConducir) 
+    from Faena as f
+    left join Vehiculo as v on v.idVehiculo    = f.idVehiculoFK
+    left join Trabajador as t on t.idTrabajador    = f.idTrabajadorFK
+    left join TipoVehiculo as tv on tv.idTipoVehiculo = v.tipoVehiculoFK
+    where v.idVehiculo =  ?"""   
+    data = (v.idVehiculo,)
+    cursor.execute(select_query, data)
+    rows = cursor.fetchall()
+    return rows

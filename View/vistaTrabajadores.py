@@ -284,6 +284,9 @@ class TabContentVistaTrabajadores(ft.UserControl):
             e.control.error_text = "Por favor, ingrese una fecha válida en el formato DD-MM-YYYY."
         self.update()
 
+    def on_text_change(e):
+        print(f"Valor actual del TextField: {e.control.value}")    
+
     def onFillData(self):
         #Cargas datos en la tabla
         controlador = TrabajadorController()
