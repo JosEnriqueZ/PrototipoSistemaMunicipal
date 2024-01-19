@@ -10,6 +10,7 @@ import flet as ft
 # the vista de trabajadores
 class TabContentVistaTrabajadores(ft.UserControl):
 
+    #inicializa la vista
     def __init__(self):
         super().__init__()
         
@@ -127,6 +128,7 @@ class TabContentVistaTrabajadores(ft.UserControl):
                             on_click=self.LimpiarDatos
                         )
 
+    #contruye
     def build(self):
         all_fields = ft.Column(
             controls=[
@@ -148,7 +150,7 @@ class TabContentVistaTrabajadores(ft.UserControl):
         )
         self.mytabla.rows.clear()
         #Cargas datos en la tabla
-        self.onFillData()
+        self.mytabla = self.onFillData()
         return ft.Column(
             [
                 ft.Text("Registro:", weight=ft.FontWeight.BOLD, size=20),
