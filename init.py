@@ -24,12 +24,9 @@ def main(page: ft.Page):
     # # Asigna la función al evento on_resize de la página
     # page.on_resize = on_resize
     
-    maquinariavista = TabContentVistaMaquinaria()
-    maquinariatrabajador = TabContentVistaTrabajadores()
-    maquinariafaena = TabContentVistaFaenas()
-    maquinariahome = TabcontentVistaHome()
-    maquinariatipocombustible= TabContentVistaTipoCombustible()
-    maquinariareporte = TabContentVistaReporte()
+
+    viewTipoCombustible= TabContentVistaTipoCombustible()
+    viewReporte             = TabContentVistaReporte()
     viewVehiculo            = TabContentVistaVehiculo()
     viewTrabajador          = TabContentVistaTrabajadores()
     viewFaena               = TabContentVistaFaenas()
@@ -65,18 +62,17 @@ def main(page: ft.Page):
                 ft.Tab(
                     icon=ft.icons.BOOK,
                     text="Faenas",
-                    content=maquinariafaena
+                    content=viewFaena
                 ),
                 ft.Tab(
                     icon=ft.icons.RICE_BOWL,
                     text="Tipo Combustible",
-                    content=maquinariatipocombustible
+                    content=viewTipoCombustible
                 ),
                 ft.Tab(
                     icon=ft.icons.RICE_BOWL,
                     text="Reporte",
-                    content=maquinariareporte
-                    content=viewFaena
+                    content=viewReporte
                 )
                 
             ]

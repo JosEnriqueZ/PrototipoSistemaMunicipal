@@ -10,7 +10,7 @@ import flet as ft
 
 
 # the content of the icon tab
-class TabContentVistaMaquinaria(ft.UserControl):
+class TabContentVistaVehiculo(ft.UserControl):
 
     def __init__(self):
         super().__init__()
