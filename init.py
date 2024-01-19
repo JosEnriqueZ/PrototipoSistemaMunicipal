@@ -1,12 +1,13 @@
 #importaciones
 import flet as ft
 from random import choice
-from View.vistaMaquinaria import TabContentVistaMaquinaria
+from View.vistaVehiculo import TabContentVistaVehiculo
 from View.vistaTrabajadores import TabContentVistaTrabajadores
 from View.vistaFaenas import TabContentVistaFaenas
 from View.vistaHome import TabcontentVistaHome
 from View.vistaTipoCombustible import TabContentVistaTipoCombustible
 from View.vistaReport import TabContentVistaReporte
+from View.vistaTipoVehiculo import TabContentVistaTipoVehiculo
 
 def main(page: ft.Page):
     page.title = "SISTEMA DE CONTROL Y SEGUIMIENTO DE MAQUINAS VEHICULOS Y EQUIPOS(SCS)"
@@ -29,6 +30,11 @@ def main(page: ft.Page):
     maquinariahome = TabcontentVistaHome()
     maquinariatipocombustible= TabContentVistaTipoCombustible()
     maquinariareporte = TabContentVistaReporte()
+    viewVehiculo            = TabContentVistaVehiculo()
+    viewTrabajador          = TabContentVistaTrabajadores()
+    viewFaena               = TabContentVistaFaenas()
+    viewHome                = TabcontentVistaHome()
+    viewTipVehiculo         = TabContentVistaTipoVehiculo()
 
     page.add(
 
@@ -39,17 +45,22 @@ def main(page: ft.Page):
                 ft.Tab(
                     icon=ft.icons.HOME,
                     text="Home",
-                    content=maquinariahome
+                    content=viewHome
                 ),
                 ft.Tab(
                     icon=ft.icons.DIRECTIONS_CAR_FILLED,
                     text="Vehiculos",
-                    content=maquinariavista
+                    content=viewVehiculo
+                ),
+                ft.Tab(
+                    icon=ft.icons.CAR_CRASH,
+                    text="Tipo Vehiculo",
+                    content=viewTipVehiculo
                 ),
                 ft.Tab(
                     icon=ft.icons.PERSON,
                     text="Trabajadores",
-                    content=maquinariatrabajador
+                    content=viewTrabajador
                 ),
                 ft.Tab(
                     icon=ft.icons.BOOK,
@@ -65,6 +76,7 @@ def main(page: ft.Page):
                     icon=ft.icons.RICE_BOWL,
                     text="Reporte",
                     content=maquinariareporte
+                    content=viewFaena
                 )
                 
             ]
