@@ -2,9 +2,9 @@ import math
 from flet import *
 from datetime import datetime
 from DB import conexion
-from Service import VehiculoService
-from Service import TipoVehiculoService
-from Service import TipoCombustibleService
+from Model.Services import VehiculoService
+from Model.Services import TipoVehiculoService
+from Model.Services import TipoCombustibleService
 
 import flet as ft
 

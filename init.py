@@ -5,6 +5,8 @@ from View.vistaMaquinaria import TabContentVistaMaquinaria
 from View.vistaTrabajadores import TabContentVistaTrabajadores
 from View.vistaFaenas import TabContentVistaFaenas
 from View.vistaHome import TabcontentVistaHome
+from View.vistaTipoCombustible import TabContentVistaTipoCombustible
+from View.vistaReport import TabContentVistaReporte
 
 def main(page: ft.Page):
     page.title = "SISTEMA DE CONTROL Y SEGUIMIENTO DE MAQUINAS VEHICULOS Y EQUIPOS(SCS)"
@@ -25,6 +27,8 @@ def main(page: ft.Page):
     maquinariatrabajador = TabContentVistaTrabajadores()
     maquinariafaena = TabContentVistaFaenas()
     maquinariahome = TabcontentVistaHome()
+    maquinariatipocombustible= TabContentVistaTipoCombustible()
+    maquinariareporte = TabContentVistaReporte()
 
     page.add(
 
@@ -51,7 +55,18 @@ def main(page: ft.Page):
                     icon=ft.icons.BOOK,
                     text="Faenas",
                     content=maquinariafaena
+                ),
+                ft.Tab(
+                    icon=ft.icons.RICE_BOWL,
+                    text="Tipo Combustible",
+                    content=maquinariatipocombustible
+                ),
+                ft.Tab(
+                    icon=ft.icons.RICE_BOWL,
+                    text="Reporte",
+                    content=maquinariareporte
                 )
+                
             ]
         ),
         ft.Text(

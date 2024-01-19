@@ -1,3 +1,5 @@
+from Model.Entities import Report
+
 def todos_Report(cnxn):
     cursor = cnxn.cursor()
     select_query = "SELECT * FROM Report"
@@ -6,31 +8,31 @@ def todos_Report(cnxn):
     print(rows)
     return rows
 
-def crear_registro_Report(cnxn,reportActivo,idTrabajadorFK,idFaenaFK,reportTipo,reportPlacaMaquinaria,reportFecha):
+def crear_registro_Report(cnxn,re:Report):
     cursor = cnxn.cursor()
     insert_query = "INSERT INTO Report (reportActivo,idTrabajadorFK,idFaenaFK,reportTipo,reportPlacaMaquinaria,reportFecha) VALUES (?, ?, ?, ? , ?, ?)"
-    data = (reportActivo,idTrabajadorFK,idFaenaFK,reportTipo,reportPlacaMaquinaria,reportFecha)
+    data = (re.reportActivo,re.idTrabajadorFK,re.idFaenaFK,re.reportTipo,re.reportPlacaMaquinaria,re.reportFecha)
     cursor.execute(insert_query, data)
     cnxn.commit()
 
-def leer_registro_Report(cnxn, idTrabajador):
+def leer_registro_Report(cnxn, re:Report):
     cursor = cnxn.cursor()
     select_query = "SELECT * FROM Report WHERE idReport = ?"
-    data = (idTrabajador,)
+    data = (re.idTrabajador,)
     cursor.execute(select_query, data)
     row = cursor.fetchone()
     return row
 
-def actualizar_registro_Report(cnxn,reportActivo,idTrabajadorFK,idFaenaFK,reportTipo,reportPlacaMaquinaria,reportFecha, idReport):
+def actualizar_registro_Report(cnxn,re:Report):
     cursor = cnxn.cursor()
     update_query = "UPDATE Report SET reportActivo = ? ,idTrabajadorFK = ? ,idFaenaFK = ? ,reportTipo = ? ,reportPlacaMaquinaria = ? ,reportFecha = ? WHERE idReport = ?"
-    data = ( reportActivo,idTrabajadorFK,idFaenaFK,reportTipo,reportPlacaMaquinaria,reportFecha, idReport)
+    data = ( re.reportActivo,re.idTrabajadorFK,re.idFaenaFK,re.reportTipo,re.reportPlacaMaquinaria,re.reportFecha, re.idReport)
     cursor.execute(update_query, data)
     cnxn.commit()
 
-def eliminar_registro_Report(cnxn, idReport):
+def eliminar_registro_Report(cnxn, re:Report):
     cursor = cnxn.cursor()
     delete_query = "UPDATE Report SET reportActivo = 0 WHERE idReport = ?"
-    data = (idReport)
+    data = (re.idReport)
     cursor.execute(delete_query, data)
     cnxn.commit()
