@@ -5,10 +5,10 @@ from Model.Entities.Vehiculo import Vehiculo
 def todos_faenas(cnxn):
     cursor = cnxn.cursor()
     select_query = """
-SELECT f.*, t.trabNombre, u.usuName ,CONCAT(v.VehNumeroPlaca,' - ',v.idVehiculo) FROM Faena as f
-left join Trabajador    as t on t.idTrabajador    = f.idTrabajadorFK
-left join Vehiculo        as v on v.idVehiculo    = f.idVehiculoFK
-left join Usuario        as u on u.idUsuario        = f.idUsuarioFK where f.faenaActivo=1"""
+        SELECT f.*, t.trabNombre, u.usuName ,CONCAT(v.VehNumeroPlaca,' - ',v.idVehiculo) FROM Faena as f
+        left join Trabajador    as t on t.idTrabajador    = f.idTrabajadorFK
+        left join Vehiculo        as v on v.idVehiculo    = f.idVehiculoFK
+        left join Usuario        as u on u.idUsuario        = f.idUsuarioFK where f.faenaActivo=1"""
     cursor.execute(select_query)
     rows = cursor.fetchall()
     print(rows)
@@ -43,22 +43,32 @@ def eliminar_registro_Faena(cnxn, f:Faena):
     cursor.execute(delete_query, data)
     cnxn.commit()
 
+def leer_registro_FaenaTotalReporte(cnxn):
+    cursor = cnxn.cursor()
+    select_query = """Select f.faenaFechaTrabajo, CONCAT(v.VehNumeroPlaca,'/',tv.tvNombre,' - ',v.VehColor,' - ',v.VehMarca) as DatosAuto, CONCAT(t.trabDNI,' - ',t.trabApellido,' - ',t.trabNombre,' - ',t.trabLicenciaConducir)as DatosPersona 
+    from Faena as f
+    left join Vehiculo as v on v.idVehiculo    = f.idVehiculoFK
+    left join Trabajador as t on t.idTrabajador    = f.idTrabajadorFK
+    left join TipoVehiculo as tv on tv.idTipoVehiculo = v.tipoVehiculoFK"""   
+    cursor.execute(select_query)
+    rows = cursor.fetchall()
+    return rows
 
-def leer_registro_FaenaxFecha(cnxn, fecha, vehiculo):
+def leer_registro_FaenaxFecha(cnxn, fecha):
     cursor = cnxn.cursor()
     select_query = """Select f.faenaFechaTrabajo, CONCAT(v.VehNumeroPlaca,'/',tv.tvNombre,' - ',v.VehColor,' - ',v.VehMarca), CONCAT(t.trabDNI,' - ',t.trabApellido,' - ',t.trabNombre,' - ',t.trabLicenciaConducir) 
     from Faena as f
     left join Vehiculo as v on v.idVehiculo    = f.idVehiculoFK
     left join Trabajador as t on t.idTrabajador    = f.idTrabajadorFK
     left join TipoVehiculo as tv on tv.idTipoVehiculo = v.tipoVehiculoFK
-    where f.faenaFechaTrabajo = ? and v.idVehiculo = ?"""   
-    data = (fecha, vehiculo)
+    where f.faenaFechaTrabajo = ?"""   
+    data = (fecha)
     cursor.execute(select_query, data)
     rows = cursor.fetchall()
     return rows
  
 
-def leer_registro_FaenaxVehiculo(cnxn, v:Vehiculo):
+def leer_registro_FaenaxVehiculo(cnxn, idvehiculo):
     cursor = cnxn.cursor()
     select_query = """Select f.faenaFechaTrabajo, CONCAT(v.VehNumeroPlaca,'/',tv.tvNombre,' - ',v.VehColor,' - ',v.VehMarca), CONCAT(t.trabDNI,' - ',t.trabApellido,' - ',t.trabNombre,' - ',t.trabLicenciaConducir) 
     from Faena as f
@@ -66,7 +76,7 @@ def leer_registro_FaenaxVehiculo(cnxn, v:Vehiculo):
     left join Trabajador as t on t.idTrabajador    = f.idTrabajadorFK
     left join TipoVehiculo as tv on tv.idTipoVehiculo = v.tipoVehiculoFK
     where v.idVehiculo =  ?"""   
-    data = (v.idVehiculo,)
+    data = (idvehiculo)
     cursor.execute(select_query, data)
     rows = cursor.fetchall()
     return rows

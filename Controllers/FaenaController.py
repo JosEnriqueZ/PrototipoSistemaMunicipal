@@ -52,17 +52,22 @@ class FaenaController():
         conexion.cerrar_conexion(conx)
         return ListTipoFaena
 
-    def ListByFechaFaena(self, f:Faena):
+    def ListByFechaFaena(self, fecha):
         conx = conexion.conectar()
-        FaenaService.leer_registro_FaenaxFecha(conx,f)
+        ListTipoFaena = FaenaService.leer_registro_FaenaxFecha(conx,fecha)
         conexion.cerrar_conexion(conx)
-        return True
+        return ListTipoFaena
     
-    def ListByVehiculoId(self, v:Vehiculo):
+    def ListByVehiculoId(self, idvehiculo):
         conx = conexion.conectar()
-        FaenaService.leer_registro_FaenaxVehiculo(conx,v)
+        ListTipoFaena =FaenaService.leer_registro_FaenaxVehiculo(conx,idvehiculo)
         conexion.cerrar_conexion(conx)
-        return True
+        return ListTipoFaena
         
+    def ListAllReporte(self):
+        conx = conexion.conectar()
+        ListFaena = FaenaService.leer_registro_FaenaTotalReporte(conx)
+        conexion.cerrar_conexion(conx)
+        return ListFaena
 
 

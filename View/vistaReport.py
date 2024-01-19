@@ -40,7 +40,6 @@ class TabContentVistaReporte(ft.UserControl):
         self.field_fecha = ft.TextField(
             label="Fecha Report",
             value="",
-            on_change=self.validar_fecha,
             keyboard_type=ft.KeyboardType.TEXT,
         )
         self.fecha_map = {}
@@ -61,11 +60,9 @@ class TabContentVistaReporte(ft.UserControl):
             column_spacing=50,
             bgcolor="white",
             columns=[
-                ft.DataColumn(ft.Text("Trabajador")),
-                ft.DataColumn(ft.Text("Faena")),
-                ft.DataColumn(ft.Text("Report Tipo")),
-                ft.DataColumn(ft.Text("Report Placa MAquinaria")),
-                ft.DataColumn(ft.Text("Report Fecha")),
+                ft.DataColumn(ft.Text("Faena Fecha Trabajo")),
+                ft.DataColumn(ft.Text("Datos Vehiculo")),
+                ft.DataColumn(ft.Text("Datos Persona")),
             ],
             rows=[],
         )
@@ -105,36 +102,63 @@ class TabContentVistaReporte(ft.UserControl):
     
 
     def on_item_selected_Vehiculo(self,e: ft.ControlEvent):
+        self.mytabla.rows.clear()
         # Asigna el valor seleccionado al TextField
         self.field_vehiculo.value = e.control.text
         self.selected_Vehiculo_id = self.Vehiculo_id_map[e.control.text]
-        print(self.selected_Vehiculo_id)
+        #print(self.selected_Vehiculo_id)
+        controlador = FaenaController()
+        #Cargas datos en la tabla
+        for t in controlador.ListByVehiculoId(self.selected_Vehiculo_id):
+            self.mytabla.rows.append(
+                DataRow(
+                    cells=[
+                        DataCell(Text(t[0])),              
+                        DataCell(Text(t[1])),
+                        DataCell(Text(t[2])),
+                    ]
+                )
+            )
+        print('Tabla Refresh')
         self.update()
 
     def on_item_selected_Fecha(self,e: ft.ControlEvent):
+        self.mytabla.rows.clear()
         # Asigna el valor seleccionado al TextField
         self.field_fecha.value = e.control.text
         self.selected_field_fecha = self.fecha_map[e.control.text]
-        self.validar_fecha(e)
-        print(self.selected_field_fecha)
+        #print(e.control.text)
+        controlador = FaenaController()
+        #Cargas datos en la tabla
+        for t in controlador.ListByFechaFaena(e.control.text):
+            self.mytabla.rows.append(
+                DataRow(
+                    cells=[
+                        DataCell(Text(t[0])),              
+                        DataCell(Text(t[1])),
+                        DataCell(Text(t[2])),
+                    ]
+                )
+            )
+        print('Tabla Refresh')
         self.update()
 
-    def validar_fecha(self, e: ft.ControlEvent):
-            # Verifica si el valor ingresado por el usuario contiene solo letras.
-            if not e.control.value.is=='':
-                print('VALUE: '+e.control.value)
-                controlador = FaenaController()
-                controlador.ListByFechaFaena(e.control.value)
-            else:
-                e.control.error_text = ""
-                print('VALUE: '+e.control.value)
-            self.update()
+    # def validar_fecha(self, e: ft.ControlEvent):
+    #         # Verifica si el valor ingresado por el usuario contiene solo letras.
+    #         if not e.control.value.is=='':
+    #             print('VALUE: '+e.control.value)
+    #             controlador = FaenaController()
+    #             controlador.ListByFechaFaena(e.control.value)
+    #         else:
+    #             e.control.error_text = ""
+    #             print('VALUE: '+e.control.value)
+    #         self.update()
 
     def onFillData(self):
         #Cargas datos en la tabla
         controlador = FaenaController()
         #Cargas datos en la tabla
-        for t in controlador.ListFaena():
+        for t in controlador.ListAllReporte():
             def cargaEditar(t):
                 return lambda e: self.cargarDatos(e, t)
             def eliminar(t):
@@ -150,6 +174,7 @@ class TabContentVistaReporte(ft.UserControl):
             )
         print('Tabla Refresh')
         return self.mytabla
+    
 
 
 if __name__ == "__main__":
