@@ -1,6 +1,7 @@
 import flet as ft
 from DB import conexion
 from Model.Services import UsuarioService
+from Model.Services import TrabajadorService
 from Model.Entities import Usuario
 
 class UsuarioController():
@@ -8,24 +9,35 @@ class UsuarioController():
 
     def ListUsuario(self):
         conx = conexion.conectar()
-        List = UsuarioService.todos_Usuario(conx)
+        ListUsuario = UsuarioService.todos_Usuario(conx)
         conexion.cerrar_conexion(conx)
-        return List
+        return ListUsuario
 
-    def DeleteTrabajadores(self, t:Usuario):
+    def DeleteUsuario(self, u:Usuario):
         conx = conexion.conectar()
-        UsuarioService.eliminar_registro_Usuario(conx,t)
+        UsuarioService.eliminar_registro_Usuario(conx,u)
         conexion.cerrar_conexion(conx)
         return True
     
-    def SaveOrUpdateTrabajadores(self, save, t:Usuario):
+    def SaveOrUpdateUsuario(self, save, u:Usuario):
         conx = conexion.conectar()
         sms  = ""
         if save:
-            UsuarioService.crear_registro_Usuario(conx,t)
+            UsuarioService.crear_registro_Usuario(conx,u)
             sms = "Registro Guardado"
         else:
-            UsuarioService.actualizar_registro_Usuario(conx,t)
+            UsuarioService.actualizar_registro_Usuario(conx,u)
             sms = "Registro Editado"   
         conexion.cerrar_conexion(conx)
         return sms
+    
+    def ListTrabajadores(self):
+        conx = conexion.conectar()
+        ListTrabajadores = TrabajadorService.todos_trabajadores(conx)
+        conexion.cerrar_conexion(conx)
+        return ListTrabajadores
+    
+
+        
+
+

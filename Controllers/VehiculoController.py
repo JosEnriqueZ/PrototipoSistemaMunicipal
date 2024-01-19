@@ -40,7 +40,7 @@ class VehiculoController():
     
     def ListTipoCombustible(self):
         conx = conexion.conectar()
-        ListTipoVehiculo = TipoVehiculoService.todos_TipoVehiculo(conx)
+        ListTipoVehiculo = TipoCombustibleService.todos_TipoCombustible(conx)
         conexion.cerrar_conexion(conx)
         return ListTipoVehiculo
 

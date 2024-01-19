@@ -5,6 +5,9 @@ class TipoVehiculo:
         self.tvNombre = tvNombre
         self.tvDescripcion = tvDescripcion
 
+    def __init__(self, idTipoVehiculo):
+        self.idTipoVehiculo = idTipoVehiculo
+
     def __repr__(self):
         return f"TipoVehiculo(idTipoVehiculo={self.idTipoVehiculo}, tvActivo={self.tvActivo}, tvNombre='{self.tvNombre}', tvDescripcion='{self.tvDescripcion}')"
     

@@ -5,6 +5,9 @@ from DB import conexion
 from Model.Services import VehiculoService
 from Model.Services import TipoVehiculoService
 from Model.Services import TipoCombustibleService
+from Controllers.VehiculoController import VehiculoController
+from Controllers.TipoCombustibleController import TipoCombustibleController
+from Model.Entities.Vehiculo import Vehiculo
 
 import flet as ft
 
@@ -27,7 +30,8 @@ class TabContentVistaVehiculo(ft.UserControl):
             keyboard_type=ft.KeyboardType.TEXT,
         )
         self.tipoVehiculo_id_map = {}
-        data = TipoVehiculoService.todos_TipoVehiculo(conexion.conectar())
+        controlador = VehiculoController()
+        data = controlador.ListTipoVehiculo()
         self.items_TipoVehiculo = ft.PopupMenuButton(
             items=[ft.PopupMenuItem(text=d[2], checked=False, on_click=self.on_item_selected_TipoVehiculo) for d in data])
         for d in data:
@@ -41,10 +45,10 @@ class TabContentVistaVehiculo(ft.UserControl):
             on_change=self.validar_nombre,
             #helper_text="Optional[str]",
             keyboard_type=ft.KeyboardType.TEXT,
-
         )
         self.tipoCombustible_id_map = {}
-        data = TipoCombustibleService.todos_TipoCombustible(conexion.conectar())
+        controlador = VehiculoController()
+        data = controlador.ListTipoCombustible()
         self.items_TipoCombustible = ft.PopupMenuButton(
             items=[ft.PopupMenuItem(text=d[3], checked=False, on_click=self.on_item_selected_TipoCombustible) for d in data])
         for d in data:
@@ -56,7 +60,6 @@ class TabContentVistaVehiculo(ft.UserControl):
             label="Color del Vehiculo",
             value="",
             keyboard_type=ft.KeyboardType.TEXT,
-
         )
 
         # text field Peso del Vehiculo
@@ -66,7 +69,6 @@ class TabContentVistaVehiculo(ft.UserControl):
             value="",
             on_change=self.validar_numeros,
             keyboard_type=ft.KeyboardType.NUMBER,
-
         )
 
         # text field Numero de Placa
@@ -75,7 +77,6 @@ class TabContentVistaVehiculo(ft.UserControl):
             hint_text="Ingrese Numero de Placa",
             value="",
             keyboard_type=ft.KeyboardType.TEXT,
-
         )
 
         # text field Marca
@@ -84,7 +85,6 @@ class TabContentVistaVehiculo(ft.UserControl):
             hint_text="Ingrese la Marca",
             value="",
             keyboard_type=ft.KeyboardType.TEXT,
-
         )
 
         # text field Fabricacion
@@ -93,7 +93,6 @@ class TabContentVistaVehiculo(ft.UserControl):
             hint_text="Ingrese el Año de Fabricacion",
             value="",
             keyboard_type=ft.KeyboardType.NUMBER,
-        
         )
 
         # text field Revision Tecnica
@@ -102,7 +101,6 @@ class TabContentVistaVehiculo(ft.UserControl):
             hint_text="Revision Tecnica",
             value="",
             keyboard_type=ft.KeyboardType.TEXT,
-
         )
         # text field Descripcion
         self.field_descripcion = ft.TextField(
@@ -110,7 +108,6 @@ class TabContentVistaVehiculo(ft.UserControl):
             hint_text="Ingrese su categoria de licencia de conducir",
             value="",
             keyboard_type=ft.KeyboardType.TEXT,
-
         )
         # text field Galones x hora Combustible
         self.field_galones = ft.TextField(
@@ -118,7 +115,6 @@ class TabContentVistaVehiculo(ft.UserControl):
             hint_text="Galones x hora Combustible",
             value="",
             keyboard_type=ft.KeyboardType.NUMBER,
-
         )
 
         self.mytabla = ft.DataTable(
@@ -179,39 +175,14 @@ class TabContentVistaVehiculo(ft.UserControl):
                 ),
                 ft.Row(
                     [self.field_descripcion, self.field_galones],
-                ),
-                
+                ),      
             ],
             alignment=ft.MainAxisAlignment.START,
             spacing=11
         )
         self.mytabla.rows.clear()
-        vehiculos = VehiculoService.todos_Vehiculo(conexion.conectar())
-        
-        for vehiculo in vehiculos:
-            def cargaEditar(vehiculo):
-                return lambda e: self.cargarDatos(vehiculo)
-            def eliminar(vehiculo):
-                return lambda e: self.eliminarDatos(vehiculo)
-            self.mytabla.rows.append(
-                DataRow(
-                    cells=[
-                        DataCell(Text(vehiculo[12])),
-                        DataCell(Text(vehiculo[13])),
-                        DataCell(Text(vehiculo[4])),
-                        DataCell(Text(vehiculo[5])),
-                        DataCell(Text(vehiculo[6])),
-                        DataCell(Text(vehiculo[7])),
-                        DataCell(Text(vehiculo[8])),
-                        DataCell(Text(vehiculo[9])),
-                        DataCell(Text(vehiculo[10])),
-                        DataCell(Text(vehiculo[11])),
-                        DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(vehiculo))),
-                        DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(vehiculo))),
-                    ]
-                )
-            )
-        #self.update()
+        #Cargas datos en la tabla
+        self.mytabla = self.onFillData()
         return ft.Column(
             [
                 ft.Text("Registro:", weight=ft.FontWeight.BOLD, size=20),
@@ -236,34 +207,31 @@ class TabContentVistaVehiculo(ft.UserControl):
             spacing=20
         )
 
-    def cargarDatos(self, vehiculo):
-        self.f_idvehiculo = vehiculo[0]
-        self.selected_tipoVehiculo_id = vehiculo[1]
-        self.selected_tipoCombustible_id = vehiculo[2]
-        self.fila_editar = vehiculo[0]
-        self.field_tipovehiculo.value = vehiculo[12]
-        self.field_tipocombustible.value = vehiculo[13]
+    def cargarDatos(self, e: ft.ControlEvent, v:Vehiculo):
+        self.f_idvehiculo               = v.idVehiculo
+        self.selected_tipoVehiculo_id   = v.tipoVehiculoFK
+        self.selected_tipoCombustible_id= v.tipoCombustibleFK
+        self.fila_editar                = v.idVehiculo
+        self.field_tipovehiculo.value   = v[12]
+        self.field_tipocombustible.value= v[13]
         # fecha_str = vehiculo[4].strftime("%d-%m-%Y")
-        self.field_colorvehiculo.value = vehiculo[4]
-        self.field_pesovehiculo.value = vehiculo[5]
-        self.field_numerop.value = vehiculo[6]
-        self.field_marca.value = vehiculo[7]
-        self.field_año.value = vehiculo[8]
-        self.field_revisiont.value = vehiculo[9]
-        self.field_descripcion.value = vehiculo[10]
-        self.field_galones.value = vehiculo[11]
-        self.boton_guardar.visible=False
-        self.boton_editar.visible=True
+        self.field_colorvehiculo.value  = v.VehColor
+        self.field_pesovehiculo.value   = v.VehPeso
+        self.field_numerop.value        = v.VehNumeroPlaca
+        self.field_marca.value          = v.VehMarca
+        self.field_año.value            = v.VahAnio
+        self.field_revisiont.value      = v.VehRevisionTecnica
+        self.field_descripcion.value    = v.VehDescripcion
+        self.field_galones.value        = v.VehGalonesHoraCombustible
+        self.boton_guardar.visible      = False
+        self.boton_editar.visible       = True
         self.update()
 
-    def eliminarDatos(self, vehiculo):
-        # Encuentra la fila que contiene los datos del vehiculo
-        selected_row = next(row for row in self.mytabla.rows if row.cells[0].content.value == vehiculo[12])
-        # Elimina esta fila de la tabla
-        self.mytabla.rows.remove(selected_row)
-        # Actualiza la página para reflejar los cambios
-        VehiculoService.eliminar_registro_Vehiculo(conexion.conectar(), vehiculo[0])
-        conexion.cerrar_conexion(conexion.conectar())
+    def eliminarDatos(self, e: ft.ControlEvent, vehiculo):
+        controlador = VehiculoController()
+        controlador.DeleteVehiculo(vehiculo)
+        self.mytabla.rows.clear()
+        self.mytabla = self.onFillData()
         self.update()
     
     def LimpiarDatos(self, e: ft.ControlEvent):
@@ -288,122 +256,48 @@ class TabContentVistaVehiculo(ft.UserControl):
         self.boton_guardar.visible=True
         self.boton_editar.visible=False
 
-        if self.fila_editar is not None:
-            self.mytabla.rows[self.fila_editar-1].cells[0].content.value = self.field_tipovehiculo.value
-            self.mytabla.rows[self.fila_editar-1].cells[1].content.value = self.field_tipocombustible.value
-            self.mytabla.rows[self.fila_editar-1].cells[2].content.value = self.field_colorvehiculo.value
-            self.mytabla.rows[self.fila_editar-1].cells[3].content.value = self.field_pesovehiculo.value
-            self.mytabla.rows[self.fila_editar-1].cells[4].content.value = self.field_numerop.value
-            self.mytabla.rows[self.fila_editar-1].cells[5].content.value = self.field_marca.value
-            self.mytabla.rows[self.fila_editar-1].cells[6].content.value = self.field_año.value
-            self.mytabla.rows[self.fila_editar-1].cells[7].content.value = self.field_revisiont.value
-            self.mytabla.rows[self.fila_editar-1].cells[8].content.value = self.field_descripcion.value
-            self.mytabla.rows[self.fila_editar-1].cells[9].content.value = self.field_galones.value
-            
-            #fecha = datetime.strptime(self.field_colorvehiculo.value, "%d-%m-%Y")
-            VehiculoService.actualizar_registro_Vehiculo(conexion.conectar(), 1, 
-                                                        self.selected_tipoVehiculo_id, 
-                                                        self.selected_tipoCombustible_id,
-                                                        self.field_colorvehiculo.value, 
-                                                        self.field_pesovehiculo.value, 
-                                                        self.field_numerop.value, 
-                                                        self.field_marca.value, 
-                                                        self.field_año.value, 
-                                                        self.field_revisiont.value,
-                                                        self.field_descripcion.value,
-                                                        self.field_galones.value,
-                                                        self.f_idvehiculo)
-            conexion.cerrar_conexion(conexion.conectar())
+        if self.fila_editar is not None:   
+            controlador = VehiculoController()
+            v = Vehiculo(self.f_idvehiculo,
+                        1, 
+                        self.selected_tipoVehiculo_id, 
+                        self.selected_tipoCombustible_id,
+                        self.field_colorvehiculo.value, 
+                        self.field_pesovehiculo.value, 
+                        self.field_numerop.value, 
+                        self.field_marca.value, 
+                        self.field_año.value, 
+                        self.field_revisiont.value,
+                        self.field_descripcion.value,
+                        self.field_galones.value,       
+            )     
+            controlador.SaveOrUpdateVehiculo(False, v)    
             self.mytabla.rows.clear()
-            vehiculos = VehiculoService.todos_Vehiculo(conexion.conectar())
-            for vehiculo in vehiculos:
-                def cargaEditar(vehiculo):
-                    return lambda e: self.cargarDatos(vehiculo)
-                def eliminar(vehiculo):
-                    return lambda e: self.eliminarDatos(vehiculo)
-                self.mytabla.rows.append(
-                    DataRow(
-                        cells=[
-                            DataCell(Text(vehiculo[12])),
-                            DataCell(Text(vehiculo[13])),
-                            DataCell(Text(vehiculo[4])),
-                            DataCell(Text(vehiculo[5])),
-                            DataCell(Text(vehiculo[6])),
-                            DataCell(Text(vehiculo[7])),
-                            DataCell(Text(vehiculo[8])),
-                            DataCell(Text(vehiculo[9])),
-                            DataCell(Text(vehiculo[10])),
-                            DataCell(Text(vehiculo[11])),
-                            DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(vehiculo))),
-                            DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(vehiculo))),
-                        ]
-                    )
-                )
-                # self.update()
-            vehiculos = VehiculoService.todos_Vehiculo(conexion.conectar())
             # Actualiza las demás celdas de la misma manera
             self.fila_editar = None  # Restablece el índice de la fila que se está editando
-            self.update()
         else:
-
             """Guardar"""
             #fecha = datetime.strptime(self.field_colorvehiculo.value, "%d-%m-%Y")
-            VehiculoService.crear_registro_Vehiculo(conexion.conectar(), 1, self.selected_tipoVehiculo_id, 
-                                                    self.selected_tipoCombustible_id,
-                                                    self.field_colorvehiculo.value, 
-                                                    self.field_pesovehiculo.value, 
-                                                    self.field_numerop.value, 
-                                                    self.field_marca.value, 
-                                                    self.field_año.value, 
-                                                    self.field_revisiont.value,
-                                                    self.field_descripcion.value,
-                                                    self.field_galones.value)
-            conexion.cerrar_conexion(conexion.conectar())
-            self.mytabla.rows.clear()
-            vehiculos = VehiculoService.todos_Vehiculo(conexion.conectar())
-            for vehiculo in vehiculos:
-                def cargaEditar(vehiculo):
-                    return lambda e: self.cargarDatos(vehiculo)
-                def eliminar(vehiculo):
-                    return lambda e: self.eliminarDatos(vehiculo)
-                self.mytabla.rows.append(
-                    DataRow(
-                        cells=[
-                            DataCell(Text(vehiculo[12])),
-                            DataCell(Text(vehiculo[13])),
-                            DataCell(Text(vehiculo[4])),
-                            DataCell(Text(vehiculo[5])),
-                            DataCell(Text(vehiculo[6])),
-                            DataCell(Text(vehiculo[7])),
-                            DataCell(Text(vehiculo[8])),
-                            DataCell(Text(vehiculo[9])),
-                            DataCell(Text(vehiculo[10])),
-                            DataCell(Text(vehiculo[11])),
-                            DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(vehiculo))),
-                            DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(vehiculo))),
-                        ]
-                    )
-                )
-                self.update()
-            # Si no se está editando ninguna fila, agrega una nueva fila
-            # self.mytabla.rows.append(
-            #     DataRow(
-            #         cells=[
-            #             DataCell(Text(self.field_tipovehiculo.value)),
-            #             DataCell(Text(self.field_tipocombustible.value)),
-            #             DataCell(Text(self.field_colorvehiculo.value)),
-            #             DataCell(Text(self.field_pesovehiculo.value)),
-            #             DataCell(Text(self.field_numerop.value)),
-            #             DataCell(Text(self.field_marca.value)),
-            #             DataCell(Text(self.field_año.value)),
-            #             DataCell(Text(self.field_revisiont.value)),
-            #             DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE)),
-            #             DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED)),
-            #         ]
-                
-            #     )
-            # )
-            # self.update()
+            controlador = VehiculoController()
+            v = Vehiculo(self.f_idvehiculo,
+                        1, 
+                        self.selected_tipoVehiculo_id, 
+                        self.selected_tipoCombustible_id,
+                        self.field_colorvehiculo.value, 
+                        self.field_pesovehiculo.value, 
+                        self.field_numerop.value, 
+                        self.field_marca.value, 
+                        self.field_año.value, 
+                        self.field_revisiont.value,
+                        self.field_descripcion.value,
+                        self.field_galones.value)
+            controlador.SaveOrUpdateVehiculo(True, v)   
+        self.mytabla.rows.clear()
+        self.mytabla = self.onFillData()
+        self.LimpiarDatos(e)
+        self.update()
+
+
     #Validaciones
     def validar_nombre(self, e: ft.ControlEvent):
             # Verifica si el valor ingresado por el usuario contiene solo letras.
@@ -421,18 +315,6 @@ class TabContentVistaVehiculo(ft.UserControl):
             e.control.error_text = ""
         self.update()
 
-    # def validar_fecha(self, e: ft.ControlEvent):
-    #     # Verifica si el valor ingresado por el usuario es una fecha válida.
-    #     fecha_str = e.control.value.strip()
-    #     try:
-    #         # Intenta convertir la cadena de texto a una fecha.
-    #         datetime.strptime(fecha_str, "%d-%m-%Y")
-    #         e.control.error_text = ""
-    #     except ValueError:
-    #         # Si la conversión falla, muestra un mensaje de error.
-    #         e.control.error_text = "Por favor, ingrese una fecha válida en el formato DD-MM-YYYY."
-    #     self.update()
-
 
     def on_item_selected_TipoVehiculo(self,e: ft.ControlEvent):
         # Asigna el valor seleccionado al TextField
@@ -447,6 +329,37 @@ class TabContentVistaVehiculo(ft.UserControl):
         self.selected_tipoCombustible_id = self.tipoCombustible_id_map[e.control.text]
         print(self.selected_tipoCombustible_id)
         self.update()
+
+
+    def onFillData(self):
+        #Cargas datos en la tabla
+        controlador = VehiculoController()
+        #Cargas datos en la tabla
+        for v in controlador.ListVehiculo():
+            def cargaEditar(v):
+                return lambda e: self.cargarDatos(e, v)
+            def eliminar(v):
+                return lambda e: self.eliminarDatos(e, v)
+            self.mytabla.rows.append(
+                DataRow(
+                    cells=[
+                        DataCell(Text(v[12])),
+                        DataCell(Text(v[13])),
+                        DataCell(Text(v.VehColor)),
+                        DataCell(Text(v.VehPeso)),
+                        DataCell(Text(v.VehNumeroPlaca)),
+                        DataCell(Text(v.VehMarca)),
+                        DataCell(Text(v.VahAnio)),
+                        DataCell(Text(v.VehRevisionTecnica)),
+                        DataCell(Text(v.VehDescripcion)),
+                        DataCell(Text(v.VehGalonesHoraCombustible)),
+                        DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(v))),
+                        DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(v))),
+                    ]
+                )
+            )
+        print('Tabla Refresh')
+        return self.mytabla
 
 if __name__ == "__main__":
     def main(page: ft.Page):

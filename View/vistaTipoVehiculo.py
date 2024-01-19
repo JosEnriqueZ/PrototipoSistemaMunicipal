@@ -174,10 +174,10 @@ class TabContentVistaTipoVehiculo(ft.UserControl):
         controlador = TipoVehiculoController()
         #Cargas datos en la tabla
         for tv in controlador.ListTipoVehiculo():
-            def cargaEditar(tv):
-                return lambda e: self.cargarDatos(e, tv)
-            def eliminar(tv):
-                return lambda e: self.eliminarDatos(e, tv)
+            def cargaEditar(t):
+                return lambda e: self.cargarDatos(e, t)
+            def eliminar(t):
+                return lambda e: self.eliminarDatos(e, t)
             self.mytabla.rows.append(
                 DataRow(
                     cells=[

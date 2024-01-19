@@ -29,8 +29,12 @@ class TipoVehiculoController():
             sms = "Registro Editado"   
         conexion.cerrar_conexion(conx)
         return sms
-    
 
+    def GetTipoVehiculoById(self, tv:TipoVehiculo):
+        conx = conexion.conectar()
+        ListTipoVehiculo =TipoVehiculoService.leer_registro_TipoVehiculo(conx,tv)
+        conexion.cerrar_conexion(conx)
+        return ListTipoVehiculo
         
 
 
