@@ -2,7 +2,10 @@ from Model.Entities import Report
 
 def todos_Report(cnxn):
     cursor = cnxn.cursor()
-    select_query = "SELECT * FROM Report"
+    select_query = """SELECT r.idReport,r.reportActivo,(t.trabNombre+' '+ t.trabApellido) as Nombre,
+                        f.faenaDescripcion,r.reportTipo,r.reportPlacaMaquinaria,r.reportFecha FROM Report r
+                        inner join Trabajador t on  r.idTrabajadorFK=t.idTrabajador
+                        inner join Faena f on f.idTrabajadorFK=t.idTrabajador"""
     cursor.execute(select_query)
     rows = cursor.fetchall()
     print(rows)
