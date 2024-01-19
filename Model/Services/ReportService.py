@@ -5,7 +5,7 @@ def todos_Report(cnxn):
     select_query = """SELECT r.idReport,r.reportActivo,(t.trabNombre+' '+ t.trabApellido) as Nombre,
                         f.faenaDescripcion,r.reportTipo,r.reportPlacaMaquinaria,r.reportFecha FROM Report r
                         inner join Trabajador t on  r.idTrabajadorFK=t.idTrabajador
-                        inner join Faena f on f.idTrabajadorFK=t.idTrabajador"""
+                        inner join Faena f on f.idTrabajadorFK=t.idTrabajador where r.reportActivo=1"""
     cursor.execute(select_query)
     rows = cursor.fetchall()
     print(rows)

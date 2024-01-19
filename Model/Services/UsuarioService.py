@@ -1,6 +1,6 @@
 def todos_Usuario(cnxn):
     cursor = cnxn.cursor()
-    select_query = "SELECT * FROM Usuario"
+    select_query = "SELECT * FROM Usuario where usuActivo=1"
     cursor.execute(select_query)
     rows = cursor.fetchall()
     print(rows)

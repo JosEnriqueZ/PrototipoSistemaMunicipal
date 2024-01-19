@@ -14,7 +14,7 @@ class TipoVehiculoController():
 
     def DeleteTipoVehiculo(self, tv:TipoVehiculo):
         conx = conexion.conectar()
-        TipoVehiculoService.eliminar_registro_TipoVehiculo(conx,v)
+        TipoVehiculoService.eliminar_registro_TipoVehiculo(conx,tv)
         conexion.cerrar_conexion(conx)
         return True
     

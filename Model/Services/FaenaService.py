@@ -4,7 +4,7 @@ def todos_faenas(cnxn):
 SELECT f.idFaena,t.idTrabajador, t.trabNombre,v.idVehiculo, v.VehNumeroPlaca,f.faenaFechaTrabajo,f.faenaHoras,f.faenaRegion,f.faenaDescripcion,f.faenaDireccionTrabajo, f.faenaKilometrosAreaTrabajo FROM Faena as f
 left join Trabajador    as t on t.idTrabajador    = f.idTrabajadorFK
 left join Vehiculo        as v on v.idVehiculo    = f.idVehiculoFK
-left join Usuario        as u on u.idUsuario        = f.idUsuarioFK"""
+left join Usuario        as u on u.idUsuario        = f.idUsuarioFK where f.faenaActivo=1"""
     cursor.execute(select_query)
     rows = cursor.fetchall()
     print(rows)

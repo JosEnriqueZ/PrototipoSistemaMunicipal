@@ -107,8 +107,8 @@ class TabContentVistaTipoVehiculo(ft.UserControl):
     #Cargado de datos para la edicion
     def cargarDatos(self, e: ft.ControlEvent, tv:TipoVehiculo):
         self.fila_editar                = tv.idTipoVehiculo
-        self.field_name.value           = tv.tv
-        self.field_descripcion.value    = tv.trabApellido
+        self.field_name.value           = tv.tvNombre
+        self.field_descripcion.value    = tv.tvDescripcion
         self.boton_guardar.visible      = False
         self.boton_editar.visible       = True
         self.update()
@@ -173,18 +173,18 @@ class TabContentVistaTipoVehiculo(ft.UserControl):
         #Cargas datos en la tabla
         controlador = TipoVehiculoController()
         #Cargas datos en la tabla
-        for tv in controlador.ListTipoVehiculoes():
-            def cargaEditar(t):
-                return lambda e: self.cargarDatos(e, t)
-            def eliminar(t):
-                return lambda e: self.eliminarDatos(e, t)
+        for tv in controlador.ListTipoVehiculo():
+            def cargaEditar(tv):
+                return lambda e: self.cargarDatos(e, tv)
+            def eliminar(tv):
+                return lambda e: self.eliminarDatos(e, tv)
             self.mytabla.rows.append(
                 DataRow(
                     cells=[
                         DataCell(Text(tv.tvNombre)),
                         DataCell(Text(tv.tvDescripcion)),
-                        DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(t))),
-                        DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(t))),
+                        DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(tv))),
+                        DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(tv))),
                     ]
                 )
             )
