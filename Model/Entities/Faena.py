@@ -1,3 +1,5 @@
+from datetime import datetime
+
 class Faena:
     def __init__(self, idFaena, faenaActivo, idTrabajadorFK, idUsuarioFK, idVehiculoFK, faenaFechaTrabajo, faenaHoras, faenaRegion, faenaDescripcion, faenaDireccionTrabajo, faenaKilometrosAreaTrabajo):
         self.idFaena = idFaena
@@ -5,7 +7,9 @@ class Faena:
         self.idTrabajadorFK = idTrabajadorFK
         self.idUsuarioFK = idUsuarioFK
         self.idVehiculoFK = idVehiculoFK
-        self.faenaFechaTrabajo = faenaFechaTrabajo
+        #Formateo de la fecha de Nacimiento
+        fecha = datetime.strptime(faenaFechaTrabajo, "%d-%m-%Y")
+        self.faenaFechaTrabajo = fecha
         self.faenaHoras = faenaHoras
         self.faenaRegion = faenaRegion
         self.faenaDescripcion = faenaDescripcion

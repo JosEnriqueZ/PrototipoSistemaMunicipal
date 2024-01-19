@@ -6,8 +6,10 @@ from Model.Services import FaenaService
 from Model.Services import TrabajadorService
 from Model.Services import UsuarioService
 from Model.Services import VehiculoService
-from Model.Services import TipoVehiculoService
-from Model.Services import TipoCombustibleService
+from Controllers.FaenaController import FaenaController
+from Controllers.VehiculoController import VehiculoController
+from Controllers.FaenaController import FaenaController
+from Model.Entities.Faena import Faena
 
 import flet as ft
 # the content of the icon tab
@@ -18,26 +20,45 @@ class TabContentVistaFaenas(ft.UserControl):
         self.f_idfaena = None
         self.fila_editar = None
         self.selected_trabajador_id = None
+        self.selected_usuario_id = None
         self.selected_Vehiculo_id = None
         
         #text field Trabajador
         self.field_trabajador = ft.TextField(
-            label="Trabajador",
+            label="Trabajadores",
             value="",
             on_change=self.validar_nombre,
             keyboard_type=ft.KeyboardType.TEXT,
         )
         self.trabajador_id_map = {}
-        data = TrabajadorService.todos_trabajadores(conexion.conectar())
+        controlador = FaenaController()
+        data = controlador.ListTrabajadores()
         self.items_Trabajador = ft.PopupMenuButton(
             items=[ft.PopupMenuItem(text=d[2], checked=False, on_click=self.on_item_selected_Trabajador) for d in data])
         for d in data:
             self.trabajador_id_map[d[2]] = d[0]  # Suponiendo que d[0] es el ID y d[2] es el nombre
             #self.items_Trabajador.items.append(ft.PopupMenuItem(text=d[2]))
 
+        # text field usuario
+        self.field_usuario = ft.TextField(
+            label="Usuarios",
+            value="",
+            on_change=self.validar_nombre,
+            #helper_text="Optional[str]",
+            keyboard_type=ft.KeyboardType.TEXT,
+        )
+        self.usuario_id_map = {}
+        controlador = FaenaController()
+        data = controlador.ListUsuario()
+        self.items_Usuario = ft.PopupMenuButton(
+            items=[ft.PopupMenuItem(text=d[3], checked=False, on_click=self.on_item_selected_Usuario) for d in data])
+        for d in data:
+            self.usuario_id_map[d[3]] = d[0]  # Suponiendo que d[0] es el ID y d[2] es el nombre
+            #self.items_Trabajador.items.append(ft.PopupMenuItem(text=d[2]))
+
         # text field Vehiculo
         self.field_vehiculo = ft.TextField(
-            label="Vehiculo",
+            label="Vehiculos",
             value="",
             on_change=self.validar_nombre,
             #helper_text="Optional[str]",
@@ -45,11 +66,12 @@ class TabContentVistaFaenas(ft.UserControl):
 
         )
         self.vehiculo_id_map = {}
-        data = VehiculoService.todos_Vehiculo(conexion.conectar())
+        controlador = VehiculoController()
+        data = controlador.ListVehiculo()
         self.items_Vehiculo = ft.PopupMenuButton(
-            items=[ft.PopupMenuItem(text=d[12], checked=False, on_click=self.on_item_selected_Vehiculo) for d in data])
+            items=[ft.PopupMenuItem(text=d[6], checked=False, on_click=self.on_item_selected_Vehiculo) for d in data])
         for d in data:
-            self.vehiculo_id_map[d[12]] = d[0]  # Suponiendo que d[0] es el ID y d[2] es el nombre
+            self.vehiculo_id_map[d[6]] = d[0]  # Suponiendo que d[0] es el ID y d[2] es el nombre
             #self.items_Trabajador.items.append(ft.PopupMenuItem(text=d[2]))
         
         # text field Fecha
@@ -115,6 +137,7 @@ class TabContentVistaFaenas(ft.UserControl):
             bgcolor="white",
             columns=[
                 ft.DataColumn(ft.Text("Trabajador")),
+                ft.DataColumn(ft.Text("Usuario")),
                 ft.DataColumn(ft.Text("Vehiculo")),
                 ft.DataColumn(ft.Text("Fecha")),
                 ft.DataColumn(ft.Text("Horas")),
@@ -149,49 +172,21 @@ class TabContentVistaFaenas(ft.UserControl):
         all_fields = ft.Column(
             controls=[
                 ft.Row(
-                    [self.field_trabajador,self.items_Trabajador,self.field_vehiculo,self.items_Vehiculo],
+                    [self.field_trabajador,self.items_Trabajador,self.field_usuario,self.items_Usuario],
                 ),
                 ft.Row(
-                    [self.field_fecha,self.field_horas],
+                    [self.field_vehiculo,self.items_Vehiculo,self.field_fecha,self.field_horas],
                 ),
                 ft.Row(
-                    [self.field_region, self.field_descripcion],
-                ),
-                ft.Row(
-                    [self.field_kilometrosa],
-                ),
-                
+                    [self.field_region, self.field_descripcion,self.field_kilometrosa],
+                )
             ],
             alignment=ft.MainAxisAlignment.START,
             spacing=11
         )
         self.mytabla.rows.clear()
-        faenas = FaenaService.todos_faenas(conexion.conectar())
-        
-        for faena in faenas:
-            def cargaEditar(faena):
-                return lambda e: self.cargarDatos(faena)
-            def eliminar(faena):
-                return lambda e: self.eliminarDatos(faena)
-            self.mytabla.rows.append(
-                DataRow(
-                    cells=[
-                        # DataCell(Text(faena[2])),
-                        # DataCell(Text(faena[4])),
-                        DataCell(Text(faena[2])),
-                        DataCell(Text(faena[4])),
-                        DataCell(Text(faena[5])),
-                        DataCell(Text(faena[6])),
-                        DataCell(Text(faena[7])),
-                        DataCell(Text(faena[8])),
-                        DataCell(Text(faena[9])),
-                        DataCell(Text(faena[10])),
-                        DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(faena))),
-                        DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(faena))),
-                    ]
-                )
-            )
-        #self.update()
+        #Cargas datos en la tabla
+        self.mytabla = self.onFillData()
         return ft.Column(
             [
                 ft.Text("Registro:", weight=ft.FontWeight.BOLD, size=20),
@@ -216,34 +211,33 @@ class TabContentVistaFaenas(ft.UserControl):
             spacing=20
         )
 
-    def cargarDatos(self, faena):
-        self.fila_editar = faena[0]
-        self.f_idfaena = faena[0]
-        self.selected_trabajador_id = faena[1]
-        self.field_trabajador.value = faena[2]
-        self.selected_Vehiculo_id = faena[3]
-        self.field_vehiculo.value = faena[4]
+    def cargarDatos(self,e: ft.ControlEvent,f:Faena):
+        self.fila_editar            = f.idFaena
+        self.f_idfaena              = f.idFaena
+        self.selected_trabajador_id = f.idTrabajadorFK
+        self.field_trabajador.value = f[11]
+        self.selected_usuario_id    = f.idUsuarioFK
+        self.field_usuario.value    = f[12]
+        self.selected_Vehiculo_id   = f.idVehiculoFK
+        self.field_vehiculo.value   = f[13]
         #self.field_fecha.value = faena[5]
-        fecha_str = faena[5].strftime("%d-%m-%Y")
+        fecha_str                   = f.faenaFechaTrabajo.strftime("%d-%m-%Y")
         self.field_fecha.value = fecha_str
-        self.field_horas.value = faena[6]
-        self.field_region.value = faena[7]
-        self.field_descripcion.value = faena[8]
-        self.field_direccion.value = faena[9]
-        self.field_kilometrosa.value = faena[10]
+        self.field_horas.value = f.faenaHoras
+        self.field_region.value = f.faenaRegion
+        self.field_descripcion.value = f.faenaDescripcion
+        self.field_direccion.value = f.faenaDireccionTrabajo
+        self.field_kilometrosa.value = f.faenaKilometrosAreaTrabajo
         # fecha_str = faena[4].strftime("%d-%m-%Y")
         self.boton_guardar.visible=False
         self.boton_editar.visible=True
         self.update()
 
-    def eliminarDatos(self, faena):
-        # Encuentra la fila que contiene los datos del faena
-        selected_row = next(row for row in self.mytabla.rows if row.cells[0].content.value == faena[12])
-        # Elimina esta fila de la tabla
-        self.mytabla.rows.remove(selected_row)
-        # Actualiza la página para reflejar los cambios
-        FaenaService.eliminar_registro_Faena(conexion.conectar(), faena[0])
-        conexion.cerrar_conexion(conexion.conectar())
+    def eliminarDatos(self, e: ft.ControlEvent, Faena):
+        controlador = FaenaController()
+        controlador.DeleteFaena(Faena)
+        self.mytabla.rows.clear()
+        self.mytabla = self.onFillData()
         self.update()
     
     def LimpiarDatos(self, e: ft.ControlEvent):
@@ -251,6 +245,7 @@ class TabContentVistaFaenas(ft.UserControl):
         self.boton_editar.visible=False
         self.f_idfaena =""
         self.field_trabajador.value = ""
+        self.field_usuario.value = ""
         self.field_vehiculo.value = ""
         self.field_fecha.value =""
         self.field_horas.value = ""
@@ -268,116 +263,42 @@ class TabContentVistaFaenas(ft.UserControl):
         self.boton_editar.visible=False
 
         if self.fila_editar is not None:
-            self.mytabla.rows[self.fila_editar-1].cells[0].content.value = self.field_trabajador.value
-            self.mytabla.rows[self.fila_editar-1].cells[1].content.value = self.field_vehiculo.value
-            self.mytabla.rows[self.fila_editar-1].cells[2].content.value = self.field_fecha.value
-            self.mytabla.rows[self.fila_editar-1].cells[3].content.value = self.field_horas.value
-            self.mytabla.rows[self.fila_editar-1].cells[4].content.value = self.field_region.value
-            self.mytabla.rows[self.fila_editar-1].cells[5].content.value = self.field_descripcion.value
-            self.mytabla.rows[self.fila_editar-1].cells[6].content.value = self.field_direccion.value
-            self.mytabla.rows[self.fila_editar-1].cells[7].content.value = self.field_kilometrosa.value
-            
-            fecha = datetime.strptime(self.field_fecha.value, "%d-%m-%Y")
-            FaenaService.actualizar_registro_Faena(conexion.conectar(), 1, 
-                                                        self.selected_trabajador_id,
-                                                        1,
-                                                        self.selected_Vehiculo_id,
-                                                        fecha,
-                                                        self.field_horas.value,
-                                                        self.field_region.value,
-                                                        self.field_descripcion.value,
-                                                        self.field_direccion.value,
-                                                        self.field_kilometrosa.value,
-                                                        self.fila_editar)
-            conexion.cerrar_conexion(conexion.conectar())
+            controlador = FaenaController()
+            v = Faena(self.f_idfaena,
+                        1, 
+                        self.selected_trabajador_id,
+                        self.selected_usuario_id,
+                        self.selected_Vehiculo_id,
+                        self.field_fecha.value, 
+                        self.field_horas.value, 
+                        self.field_region.value, 
+                        self.field_descripcion.value,    
+                        self.field_direccion.value,  
+                        self.field_kilometrosa.value,     
+            )     
+            controlador.SaveOrUpdateFaena(False, v)    
             self.mytabla.rows.clear()
-            faenas = FaenaService.todos_faenas(conexion.conectar())
-            for faena in faenas:
-                def cargaEditar(faena):
-                    return lambda e: self.cargarDatos(faena)
-                def eliminar(faena):
-                    return lambda e: self.eliminarDatos(faena)
-                self.mytabla.rows.append(
-                    DataRow(
-                        cells=[
-                            # DataCell(Text(faena[2])),
-                            # DataCell(Text(faena[4])),
-                            DataCell(Text(faena[2])),
-                            DataCell(Text(faena[4])),
-                            DataCell(Text(faena[5])),
-                            DataCell(Text(faena[6])),
-                            DataCell(Text(faena[7])),
-                            DataCell(Text(faena[8])),
-                            DataCell(Text(faena[9])),
-                            DataCell(Text(faena[10])),
-                            DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(faena))),
-                            DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(faena))),
-                        ]
-                    )
-                )
-                self.update()
-            faenas = FaenaService.todos_faenas(conexion.conectar())
-            # Actualiza las demás celdas de la misma manera
             self.fila_editar = None  # Restablece el índice de la fila que se está editando
         else:
             """Guardar"""
-            fecha = datetime.strptime(self.field_fecha.value, "%d-%m-%Y")
-            FaenaService.crear_registro_Faena(conexion.conectar(), 1, self.selected_Vehiculo_id, 
-                                                    self.selected_trabajador_id,
-                                                    1,
-                                                    self.selected_Vehiculo_id,
-                                                    fecha,
-                                                    self.field_horas.value,
-                                                    self.field_region.value,
-                                                    self.field_descripcion.value,
-                                                    self.field_direccion.value,
-                                                    self.field_kilometrosa.value)
-            conexion.cerrar_conexion(conexion.conectar())
-            self.mytabla.rows.clear()
-            faenas = FaenaService.todos_faenas(conexion.conectar())
-            for faena in faenas:
-                def cargaEditar(faena):
-                    return lambda e: self.cargarDatos(faena)
-                def eliminar(faena):
-                    return lambda e: self.eliminarDatos(faena)
-                self.mytabla.rows.append(
-                    DataRow(
-                        cells=[
-                            # DataCell(Text(faena[2])),
-                            # DataCell(Text(faena[4])),
-                            DataCell(Text(faena[2])),
-                            DataCell(Text(faena[4])),
-                            DataCell(Text(faena[5])),
-                            DataCell(Text(faena[6])),
-                            DataCell(Text(faena[7])),
-                            DataCell(Text(faena[8])),
-                            DataCell(Text(faena[9])),
-                            DataCell(Text(faena[10])),
-                            DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(faena))),
-                            DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(faena))),
-                        ]
-                    )
-                )
-                self.update()
-            # Si no se está editando ninguna fila, agrega una nueva fila
-            # self.mytabla.rows.append(
-            #     DataRow(
-            #         cells=[
-            #             DataCell(Text(self.field_tipovehiculo.value)),
-            #             DataCell(Text(self.field_vehiculo.value)),
-            #             DataCell(Text(self.field_colorvehiculo.value)),
-            #             DataCell(Text(self.field_pesovehiculo.value)),
-            #             DataCell(Text(self.field_numerop.value)),
-            #             DataCell(Text(self.field_marca.value)),
-            #             DataCell(Text(self.field_año.value)),
-            #             DataCell(Text(self.field_revisiont.value)),
-            #             DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE)),
-            #             DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED)),
-            #         ]
-                
-            #     )
-            # )
-            # self.update()
+            controlador = FaenaController()
+            v = Faena(self.f_idfaena,
+                        1, 
+                        self.selected_trabajador_id,
+                        self.selected_usuario_id,
+                        self.selected_Vehiculo_id,
+                        self.field_fecha.value, 
+                        self.field_horas.value, 
+                        self.field_region.value, 
+                        self.field_descripcion.value,    
+                        self.field_direccion.value,  
+                        self.field_kilometrosa.value,     
+            )   
+            controlador.SaveOrUpdateFaena(True, v)   
+        self.mytabla.rows.clear()
+        self.mytabla = self.onFillData()
+        self.LimpiarDatos(e)
+        self.update()
     #Validaciones
     def validar_nombre(self, e: ft.ControlEvent):
             # Verifica si el valor ingresado por el usuario contiene solo letras.
@@ -415,6 +336,14 @@ class TabContentVistaFaenas(ft.UserControl):
         self.selected_trabajador_id = self.trabajador_id_map[e.control.text]
         print(self.selected_trabajador_id)
         self.update()
+
+    def on_item_selected_Usuario(self,e: ft.ControlEvent):
+        # Asigna el valor seleccionado al TextField
+        self.field_usuario.value = e.control.text
+        self.selected_usuario_id = self.usuario_id_map[e.control.text]
+        print(self.selected_usuario_id)
+        self.update()
+
     #lista de vehiculos
     def on_item_selected_Vehiculo(self,e: ft.ControlEvent):
         # Asigna el valor seleccionado al TextField
@@ -422,6 +351,35 @@ class TabContentVistaFaenas(ft.UserControl):
         self.selected_Vehiculo_id = self.vehiculo_id_map[e.control.text]
         print(self.selected_Vehiculo_id)
         self.update()
+
+    def onFillData(self):
+        #Cargas datos en la tabla
+        controlador = FaenaController()
+        #Cargas datos en la tabla
+        for u in controlador.ListFaena():
+            def cargaEditar(v):
+                return lambda e: self.cargarDatos(e, u)
+            def eliminar(v):
+                return lambda e: self.eliminarDatos(e, u)
+            self.mytabla.rows.append(
+                DataRow(
+                    cells=[
+                        DataCell(Text(u[11])),
+                        DataCell(Text(u[12])),
+                        DataCell(Text(u[13])),
+                        DataCell(Text(u.faenaFechaTrabajo)),
+                        DataCell(Text(u.faenaHoras)),
+                        DataCell(Text(u.faenaRegion)),
+                        DataCell(Text(u.faenaDescripcion)),
+                        DataCell(Text(u.faenaDireccionTrabajo)),
+                        DataCell(Text(u.faenaKilometrosAreaTrabajo)),
+                        DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(u))),
+                        DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(u))),
+                    ]
+                )
+            )
+        print('Tabla Refresh')
+        return self.mytabla
 
 if __name__ == "__main__":
     def main(page: ft.Page):
