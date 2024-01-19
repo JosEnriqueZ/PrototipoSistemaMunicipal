@@ -150,7 +150,7 @@ class TabContentVistaTrabajadores(ft.UserControl):
         )
         self.mytabla.rows.clear()
         #Cargas datos en la tabla
-        self.mytabla = self.onFillData()
+        self.onFillData()
         return ft.Column(
             [
                 ft.Text("Registro:", weight=ft.FontWeight.BOLD, size=20),

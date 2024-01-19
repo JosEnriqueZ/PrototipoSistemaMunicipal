@@ -1,3 +1,7 @@
+from Controllers.TipoVehiculoController import TipoVehiculoController
+from Model.Entities import TipoVehiculo
+
+
 class Vehiculo:
     def __init__(self, idVehiculo, VehActivo, tipoVehiculoFK, tipoCombustibleFK, VehColor, VehPeso, VehNumeroPlaca, VehMarca, VahAnio, VehRevisionTecnica, VehDescripcion, VehGalonesHoraCombustible):
         self.idVehiculo = idVehiculo
@@ -26,6 +30,9 @@ class Vehiculo:
         self.VehActivo = VehActivo
 
     def get_tipoVehiculoFK(self):
+        tv = TipoVehiculo(self.tipoVehiculoFK)
+        controlador = TipoVehiculoController()
+        data = controlador.GetTipoVehiculoById(tv)
         return self.tipoVehiculoFK
 
     def set_tipoVehiculoFK(self, tipoVehiculoFK):

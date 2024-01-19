@@ -173,7 +173,7 @@ class TabContentVistaTipoVehiculo(ft.UserControl):
         #Cargas datos en la tabla
         controlador = TipoVehiculoController()
         #Cargas datos en la tabla
-        for tv in controlador.ListTipoVehiculoes():
+        for tv in controlador.ListTipoVehiculo():
             def cargaEditar(t):
                 return lambda e: self.cargarDatos(e, t)
             def eliminar(t):
@@ -183,8 +183,8 @@ class TabContentVistaTipoVehiculo(ft.UserControl):
                     cells=[
                         DataCell(Text(tv.tvNombre)),
                         DataCell(Text(tv.tvDescripcion)),
-                        DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(t))),
-                        DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(t))),
+                        DataCell(ft.IconButton(icon=ft.icons.EDIT,icon_color=ft.colors.BLUE,on_click=cargaEditar(tv))),
+                        DataCell(ft.IconButton(icon=ft.icons.DELETE,icon_color=ft.colors.RED,on_click=eliminar(tv))),
                     ]
                 )
             )

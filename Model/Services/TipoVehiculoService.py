@@ -1,6 +1,6 @@
 from Model.Entities import TipoVehiculo
 
-def todos_TipoVehiculo(cnxn, tv:TipoVehiculo):
+def todos_TipoVehiculo(cnxn):
     cursor = cnxn.cursor()
     select_query = "SELECT * FROM TipoVehiculo"
     cursor.execute(select_query)
